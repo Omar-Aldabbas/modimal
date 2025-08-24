@@ -31,7 +31,7 @@ export const Navbar = () => {
       className={cn(
         "relative w-full transition-all duration-300",
         isScroll
-          ? "bg-background/80 backdrop-blur-md fixed  "
+          ? "bg-background/80 backdrop-blur-xs fixed  "
           : "bg-background"
       )}
     >
