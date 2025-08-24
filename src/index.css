@@ -1,0 +1,128 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;500;700&display=swap");
+
+body {
+  font-family: "Montserrat", sans-serif;
+}
+
+@theme {
+  --color-primary: var(--primary);
+  --color-foreground: var(--foreground);
+
+  --color-logo: var(--logo);
+
+  --color-background: var(--background);
+
+  --color-heading: var(--heading);
+  --color-body: var(--body);
+  --color-header: var(--body-header);
+
+  --animate-fade-in: fade-in 0.5s ease-out forwards;
+  --animate-float: float 0.4 ease-in-out infinite;
+
+  --animate-reveal-left: reveal-left 0.7 ease;
+  --animate-reveal-right: reveal-right 0.7 ease;
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 100;
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes reveal-left {
+    0% {
+      transform: translatX(0);
+    }
+    100% {
+      transform: translate(-100%);
+    }
+  }
+
+  @keyframes reveal-right {
+    0% {
+      transform: translatX(0);
+    }
+    100% {
+      transform: translate(100%);
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --primary: #748c70;
+    --forground: #ffffff;
+
+    --logo: #000000;
+
+    --heading: #3e3e3e;
+    --body: #404040;
+
+    --body-header: #0c0c0c;
+
+    --background: #ffffff;
+    --card: #f9f9f9;
+
+    --font-primary: "Montserrat", sans-serif;
+    --font-photo: "Gill Sans MT", "Gill Sans", "Trebuchet MS", sans-serif;
+    --font-logo: "Leque Spartan", sans-serif;
+  }
+
+  .dark {
+    /* Primary accent color for buttons, links, highlights */
+    --primary: #7fb77e; /* soft green with enough contrast */
+
+    --logo: #426e41;
+    /* Text & foreground elements */
+    --foreground: #f5f5f5; /* almost white for readability */
+
+    /* Headings */
+    --heading: #e0e0e0; /* light gray for headings */
+
+    /* Body text */
+    --body: #c0c0c0; /* softer gray for paragraphs */
+
+    /* Subtle backgrounds for sections / overlays */
+    --body-header: #426e41;
+
+    /* Main background */
+    --background: #121212; /* true dark gray, easy on the eyes */
+
+    /* Cards / container backgrounds */
+    --card: #1e1e1e; /* slightly lighter than background for distinction */
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 100;
+  }
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+}
