@@ -1,92 +1,152 @@
-import { useEffect, useState } from "react";
-import { NavTags } from "../data/NavTags";
-import { Logo } from "./Logo";
 import { cn } from "../utils/cn";
-import { Link } from "react-router-dom";
-import { Heart, LucideShoppingBag, Search, User2 } from "lucide-react";
+import { NavTags } from "../data/NavTags";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Logo } from "./Logo";
+import {
+  Heart,
+  LucideShoppingBag,
+  Search,
+  User2,
+  Menu,
+  ChevronDown,
+} from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
+import formality from "../assets/images/formality.png";
+import newWinter from "../assets/images/newWinter.png";
+import {MobileNavbar} from "./MobileNavbar" 
 
 export const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isScroll, setIsScroll] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [activeTag, setActiveTag] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScroll(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 30);
     };
 
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleMobileMenu = () => setIsOpen(!isOpen);
-
-  const handleActiveTag = (tag) =>
+  const getActiveTag = (tag) => {
     setActiveTag(activeTag?.title === tag.title ? null : tag);
+  };
+
+  const handleLogo = () => {
+    navigate("/");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
+    <>
     <nav
       className={cn(
-        "w-full transition-all duration-500",
-        isScroll
-          ? "bg-background/80 backdrop-blur-xs fixed  "
-          : "bg-background"
+        "hidden md:flex sticky top-0 z-50 py-3  flex-col w-full transition-all duration-500",
+        isScrolled ? "bg-background/80 backdrop-blur-xs" : "bg-background"
       )}
     >
-      <div className="flex px-4 py-3 items-center justify-around">
-        <Logo />
-        <ul className="flex gap-10 text-body">
-          {NavTags.map((tag, i) => (
-            <li key={i} className="font-thin hover:text-header">
-              <button onClick={() => handleActiveTag(tag)}>{tag.title}</button>
+      <ul className="flex justify-around items-center px-4">
+        <li>
+          <Logo
+            onClick={handleLogo}
+            className="cursor-pointer hover:text-header"
+          />
+        </li>
+        <li>
+          <ul className="font-thin text-sm text-body/90 flex justify-between items-center gap-5">
+            {NavTags.map((tag, i) => (
+              <li key={i} className="">
+                <button
+                  onClick={() => getActiveTag(tag)}
+                  className="hover:text-header transition-colors"
+                >
+                  {tag.title}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </li>
+        <li>
+          <ul className="hidden md:flex gap-3 justify-center items-center">
+            <li>
+              <Link>
+                <Search size={20} className="hover:text-header" />
+              </Link>
             </li>
-          ))}
-        </ul>
-
-        <div className="flex gap-4 justify-center items-center">
-          <Link>
-            <Search size={20} className="hover:text-header" />
-          </Link>
-          <Link>
-            <Heart size={20} className="hover:text-header" />
-          </Link>
-          <Link>
-            <User2 size={20} className="hover:text-header" />
-          </Link>
-          <Link>
-            <LucideShoppingBag size={20} className="hover:text-header" />
-          </Link>
-          <ThemeToggle />
-        </div>
-      </div>
+            <li>
+              <Link>
+                <Heart size={20} className="hover:text-header" />
+              </Link>
+            </li>
+            <li>
+              <Link>
+                <User2 size={20} className="hover:text-header" />
+              </Link>
+            </li>
+            <li>
+              <Link>
+                <LucideShoppingBag size={20} className="hover:text-header" />
+              </Link>
+            </li>
+            <li>
+              <ThemeToggle />
+            </li>
+          </ul>
+        </li>
+      </ul>
 
       {activeTag && (
-        <div
-          className={cn(
-            "grid grid-cols-2 justify-center items-center px-8 w-full h-[60vh]",
-            isScroll ? "bg-background/80 fixed backdrop-blur-md" : "bg-background"
-          )}
-        >
-          <div className="grid grid-cols-3  p-1 gap-3 px-4">
-            {Object.entries(activeTag.sections).map(([title, items]) => (
+        <div className="sticky top-0 max-h-[60vh] py-4 flex justify-around items-center w-full">
+          <div className="grid grid-cols-3 gap-6 px-6 ">
+            {Object.entries(activeTag.sections).map(([title, values]) => (
               <div key={title}>
-                <h4 className="mb-3 text-header">{title}</h4>
-                <ul className="text-body">
-                  {items.map((tag, i) => (
-                    <li key={i} className="mb-2">
-                      <a href="#" className="hover:text-header hover:underline">
-                        {tag}
-                      </a>
+                <h4 className="text-sm mb-3 text-header">{title}</h4>
+                <ul className="text-foreground space-y-2">
+                  {values.map((value, i) => (
+                    <li
+                      key={i}
+                      className="hover:text-primary/90 hover:underline text-xs transition-all duration-500"
+                    >
+                      <Link>{value}</Link>
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
           </div>
+          <div className="flex justify-center items-center gap-8 p-3">
+            <Link>
+            <div className="flex flex-col gap-2 p-1 hover:text-primary/90 hover:underline text-xs transition-all duration-500">
+              <img
+                src={formality}
+                alt="Our unique formal collection"
+                className="w-[150px] h-[200px] space-y-3 rounded-lg"
+              />
+              <h4 >
+                Formality Collection
+              </h4>
+            </div>
+            </Link>
+            <Link>
+            <div className="flex flex-col gap-2 p-1 hover:text-primary/90 hover:underline text-xs transition-all duration-500">
+              <img
+                src={newWinter}
+                alt="For warm winters"
+                className="w-[150px] h-[200px] space-y-3 rounded-lg"
+              />
+              <h4 >
+                newWinter Collection
+              </h4>
+            </div>
+            </Link>
+          </div>
         </div>
       )}
     </nav>
+    <MobileNavbar/>
+    </>
   );
 };

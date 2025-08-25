@@ -35,6 +35,7 @@ model Product {
   variants    Json         // array of objects: [{size, color, quantity}]
   tags        String[]     // array of tags
   createdAt   DateTime @default(now())
+  sales       Int
 
   // RELATIONS
   orderItems  OrderItem[]  // back-relation to OrderItem

@@ -1,8 +1,8 @@
 import { Leaf } from "lucide-react";
 
-export const Logo = () => {
+export const Logo = ({className ='', onClick}) => {
   return (
-    <div className="flex flex-col items-center">
+    <div onClick={onClick} className={`flex flex-col items-center ${className} `}>
       <h2 className="text-3xl text-logo font-bold flex items-center tracking-widest font-logo">
         modimal
         <span>

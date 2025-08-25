@@ -4,11 +4,14 @@ import { FakeProducts } from "../src/FakeProducts.js";
 
 const prisma = new PrismaClient();
 
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 async function main() {
   console.log("Start seeding ...");
 
   for (const prod of FakeProducts) {
-    // Ensure pics and variants are arrays
     const picsArray = Array.isArray(prod.pics) ? prod.pics : [];
     const variantsArray = Array.isArray(prod.variants) ? prod.variants : [];
 
@@ -18,16 +21,16 @@ async function main() {
         description: prod.description || "No description",
         price: prod.price || 0,
         season: prod.season || "Unknown",
-        mainPic: prod.mainPic || (picsArray[0] || ""),
-        pics: picsArray, // directly store as string array
-        variants: {
-          create: variantsArray, // each variant must have size, color, quantity
-        },
+        mainPic: prod.mainPic || picsArray[0] || "",
+        pics: picsArray,
+        variants: variantsArray, // directly store JSON array
+        tags: prod.tags || [],
+        sales: randInt(40, 300), // must be top-level field
       },
     });
   }
 
-  console.log("Seeding finished.");
+  console.log("✅ Seeding finished.");
 }
 
 main()

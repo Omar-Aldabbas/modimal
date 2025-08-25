@@ -1,6 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import cors from "cors";
+import path from "path"
 
 import userRouter from "../routes/userRoute.js";
 import authRouter from "../routes/authRoute.js";
@@ -11,7 +13,18 @@ import AppError from "../utils/AppError.js";
 
 dotenv.config();
 
+
+
 const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:5173", 
+    credentials: true, 
+  })
+);
+
+app.use("/images", express.static(path.join(process.cwd(), "public/images")));
 
 // MIDDLEWARES
 app.use(express.json());

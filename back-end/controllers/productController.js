@@ -2,11 +2,27 @@ import prisma from "../src/db.js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/AppError.js";
 
+// Base URL for serving images
+const IMAGE_BASE_URL = "http://localhost:3000/images";
+
+// Helper function to map images to full URLs
+const mapImagesToURL = (product) => ({
+  ...product,
+  mainPic: product.mainPic ? `${IMAGE_BASE_URL}/${product.mainPic}` : "",
+  pics: product.pics ? product.pics.map((pic) => `${IMAGE_BASE_URL}/${pic}`) : [],
+});
+
 // ======================
 // GET ALL PRODUCTS
 // ======================
 export const getAllProducts = catchAsync(async (req, res, next) => {
+  const { season, tag } = req.query;
+
   const products = await prisma.product.findMany({
+    where: {
+      ...(season && { season }),
+      ...(tag && { tags: { has: tag } }),
+    },
     select: {
       id: true,
       name: true,
@@ -19,16 +35,49 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
       tags: true,
       createdAt: true,
     },
+    orderBy: { createdAt: "desc" },
   });
 
-  if (!products.length) {
-    return next(new AppError("There are no products yet!", 404));
-  }
+  if (!products.length) return next(new AppError("No products found", 404));
 
   res.status(200).json({
     status: "success",
     results: products.length,
-    data: products,
+    data: products.map(mapImagesToURL),
+  });
+});
+
+// ======================
+// GET TOP SELLERS
+// ======================
+export const getTopSellers = catchAsync(async (req, res, next) => {
+  const products = await prisma.product.findMany({
+    orderBy: { sales: "desc" },
+    take: 10,
+  });
+
+  if (!products.length) return next(new AppError("No top sellers yet!", 404));
+
+  res.status(200).json({
+    status: "success",
+    data: products.map(mapImagesToURL),
+  });
+});
+
+// ======================
+// GET NEW ITEMS
+// ======================
+export const getNewItems = catchAsync(async (req, res, next) => {
+  const products = await prisma.product.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 10,
+  });
+
+  if (!products.length) return next(new AppError("No new items yet!", 404));
+
+  res.status(200).json({
+    status: "success",
+    data: products.map(mapImagesToURL),
   });
 });
 
@@ -58,7 +107,7 @@ export const getProductById = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    data: product,
+    data: mapImagesToURL(product),
   });
 });
 
@@ -66,8 +115,7 @@ export const getProductById = catchAsync(async (req, res, next) => {
 // CREATE PRODUCT
 // ======================
 export const createProduct = catchAsync(async (req, res, next) => {
-  const { name, description, price, season, mainPic, variants, tags, pics } =
-    req.body;
+  const { name, description, price, season, mainPic, variants, tags, pics } = req.body;
 
   const newProduct = await prisma.product.create({
     data: {
@@ -76,16 +124,16 @@ export const createProduct = catchAsync(async (req, res, next) => {
       price,
       season,
       mainPic,
-      variants, // pass JSON directly
-      tags, // pass array of strings
-      pics, // pass array of strings
+      variants, // JSON array of variants
+      tags,     // array of strings
+      pics,     // array of strings
     },
   });
 
   res.status(201).json({
     status: "success",
     message: "Product created",
-    data: newProduct,
+    data: mapImagesToURL(newProduct),
   });
 });
 
@@ -94,8 +142,7 @@ export const createProduct = catchAsync(async (req, res, next) => {
 // ======================
 export const updateProduct = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  const { name, description, price, season, mainPic, variants, tags, pics } =
-    req.body;
+  const { name, description, price, season, mainPic, variants, tags, pics } = req.body;
 
   const updatedProduct = await prisma.product.update({
     where: { id: parseInt(id) },
@@ -114,7 +161,7 @@ export const updateProduct = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     message: "Product updated",
-    data: updatedProduct,
+    data: mapImagesToURL(updatedProduct),
   });
 });
 

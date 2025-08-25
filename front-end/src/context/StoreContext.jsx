@@ -12,34 +12,30 @@ export const StoreProvider = ({ children }) => {
   const [newProducts, setNewProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [promo, setPromo] = useState("");
 
   const api = axios.create({
-    baseURL: "http://localhost:5000/api", // your backend URL
+    baseURL: "http://localhost:3000/api/v1",
     withCredentials: true,
   });
 
-  // Fetch products and promo on mount
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
 
-        // Get all products
         const res = await api.get("/products");
         const allProducts = res.data.data;
 
-        // Sort best selling and newest products
+        console.log(allProducts)
+
         const best = [...allProducts]
-          .sort((a, b) => {
-            const aTotal =
-              a.variants?.reduce((acc, v) => acc + (v.quantity || 0), 0) || 0;
-            const bTotal =
-              b.variants?.reduce((acc, v) => acc + (v.quantity || 0), 0) || 0;
-            return bTotal - aTotal;
-          })
+          .sort((a, b) => (b.sales || 0) - (a.sales || 0))
           .slice(0, 4);
 
+          console.log(best)
+
+
+        // Sort newest by createdAt
         const newest = [...allProducts]
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           .slice(0, 5);
@@ -47,10 +43,6 @@ export const StoreProvider = ({ children }) => {
         setProducts(allProducts);
         setBestSelling(best);
         setNewProducts(newest);
-
-        // Optional: get promo from backend
-        const promoRes = await api.get("/promo");
-        setPromo(promoRes.data.promo);
       } catch (err) {
         console.error("Failed to fetch products:", err);
       } finally {
@@ -95,10 +87,7 @@ export const StoreProvider = ({ children }) => {
     });
   };
 
-  const removeFromCart = ({
-    product,
-    options = { size: null, color: null },
-  }) => {
+  const removeFromCart = (product, options = { size: null, color: null }) => {
     setCart((prev) =>
       prev.filter(
         (item) =>
@@ -135,7 +124,7 @@ export const StoreProvider = ({ children }) => {
 
     try {
       const res = await api.post("/orders", { items: cart });
-      setCart([]); // clear cart
+      setCart([]);
       return { success: true, order: res.data };
     } catch (err) {
       console.error("Order failed:", err);
@@ -154,7 +143,6 @@ export const StoreProvider = ({ children }) => {
         newProducts,
         cart,
         loading,
-        promo,
         addToCart,
         removeFromCart,
         updateQuantity,

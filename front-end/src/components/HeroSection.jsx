@@ -1,11 +1,9 @@
-import  Hero  from "../assets/images/Hero.png";
+import { HeroGallery } from "./HeroGallery";
 
 export const HeroSection = () => {
   return (
-    <section className="min-h-screen">
-      <div>
-        <img src={Hero} alt="two models" />
-      </div>
+    <section className="">
+      <HeroGallery/>
     </section>
   );
 };
