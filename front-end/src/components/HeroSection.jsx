@@ -5,8 +5,6 @@ export const HeroSection = () => {
     <section className="min-h-screen">
       <div>
         <img src={Hero} alt="two models" />
-        <img src={Hero} alt="two models" />
-        <img src={Hero} alt="two models" />
       </div>
     </section>
   );

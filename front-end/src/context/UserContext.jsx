@@ -1,24 +1,26 @@
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
 
-// Create the context
 export const UserContext = createContext();
 
 // Provider
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // user info (not token)
-  const [loading, setLoading] = useState(true); // for initial check
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Check if user is already logged in (via cookie) on app start
+  const api = axios.create({
+    baseURL: "http://localhost:5000/api", // <-- your backend URL
+    withCredentials: true,
+  });
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
         setLoading(true);
-        // Backend endpoint returns user info if cookie is valid
-        const res = await axios.get("/api/me", { withCredentials: true });
+        const res = await api.get("/me"); 
         setUser(res.data.user);
-      } catch (err) {
-        setUser(null); // not logged in
+      } catch {
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -28,12 +30,7 @@ export const UserProvider = ({ children }) => {
 
   const signup = async (userData) => {
     try {
-      // Sends data to backend
-      const res = await axios.post("/api/signup", userData, {
-        withCredentials: true,
-      });
-
-      // Stores user info locally (context) after successful signup
+      const res = await api.post("/signup", userData);
       setUser(res.data.user);
       return { success: true };
     } catch (err) {
@@ -44,13 +41,10 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // Login function
   const login = async (credentials) => {
     try {
-      const res = await axios.post("/api/login", credentials, {
-        withCredentials: true,
-      });
-      setUser(res.data.user); // store only user info
+      const res = await api.post("/login", credentials);
+      setUser(res.data.user);
       return { success: true };
     } catch (err) {
       return {
@@ -60,32 +54,21 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // Logout function
   const logout = async () => {
     try {
-      await axios.post("/api/logout", {}, { withCredentials: true });
+      await api.post("/logout");
       setUser(null);
     } catch (err) {
       console.error("Logout failed:", err);
     }
   };
 
-  // Check if user is logged in
   const isLoggedIn = () => !!user;
-
-  // Optional: check role (admin, customer, etc.)
   const hasRole = (role) => user?.role === role;
 
   return (
     <UserContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        logout,
-        isLoggedIn,
-        hasRole,
-      }}
+      value={{ user, loading, login, logout, signup, isLoggedIn, hasRole }}
     >
       {children}
     </UserContext.Provider>

@@ -1,57 +1,67 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { UserContext } from "./UserContext";
-import { FakeProducts } from "../data/FakeProducts";
 
 export const StoreContext = createContext();
 
-const avgSales =
-  FakeProducts.reduce((acc, curr) => acc + curr.sales, 0) / FakeProducts.length;
-const bestSellers = FakeProducts.filter((el) => el.sales > avgSales)
-  .sort((a, b) => a.sales - b.sales)
-  .slice(0, 4);
-const newest = FakeProducts.sort(
-  (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-).slice(0, 5);
-const fakePromo = "Discount 20% For New Member, ONLY FOR TODAY!!"
-
 export const StoreProvider = ({ children }) => {
   const { user } = useContext(UserContext);
+
   const [products, setProducts] = useState([]);
   const [bestSelling, setBestSelling] = useState([]);
   const [newProducts, setNewProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [promo, setPromo] = useState(false);
+  const [promo, setPromo] = useState("");
 
+  const api = axios.create({
+    baseURL: "http://localhost:5000/api", // your backend URL
+    withCredentials: true,
+  });
+
+  // Fetch products and promo on mount
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const [allRes, bestRes, newRes, promoApi] = await Promise.all([
-          axios.get("/api/products"),
-          axios.get("/api/products?sort=sales"),
-          axios.get("/api/products?sort=new"),
-          axios.get("api/promo")
-        ]);
-        setProducts(allRes.data);
-        setBestSelling(bestRes.data);
-        setNewProducts(newRes.data);
-        setPromo(promoApi.data)
+
+        // Get all products
+        const res = await api.get("/products");
+        const allProducts = res.data.data;
+
+        // Sort best selling and newest products
+        const best = [...allProducts]
+          .sort((a, b) => {
+            const aTotal =
+              a.variants?.reduce((acc, v) => acc + (v.quantity || 0), 0) || 0;
+            const bTotal =
+              b.variants?.reduce((acc, v) => acc + (v.quantity || 0), 0) || 0;
+            return bTotal - aTotal;
+          })
+          .slice(0, 4);
+
+        const newest = [...allProducts]
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 5);
+
+        setProducts(allProducts);
+        setBestSelling(best);
+        setNewProducts(newest);
+
+        // Optional: get promo from backend
+        const promoRes = await api.get("/promo");
+        setPromo(promoRes.data.promo);
       } catch (err) {
         console.error("Failed to fetch products:", err);
-        setProducts(FakeProducts);
-        setBestSelling(bestSellers);
-        setNewProducts(newest);
-        setPromo(fakePromo)
-
       } finally {
         setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
 
+  // CART FUNCTIONS
   const addToCart = ({ product, variant, quantity = 1 }) => {
     setCart((prev) => {
       const index = prev.findIndex(
@@ -63,11 +73,10 @@ export const StoreProvider = ({ children }) => {
 
       if (index !== -1) {
         const newCart = [...prev];
-        const newQty = newCart[index].quantity + quantity;
-        newCart[index] = {
-          ...newCart[index],
-          quantity: Math.min(newQty, variant.quantity),
-        };
+        newCart[index].quantity = Math.min(
+          newCart[index].quantity + quantity,
+          variant.quantity
+        );
         return newCart;
       }
 
@@ -86,7 +95,6 @@ export const StoreProvider = ({ children }) => {
     });
   };
 
-  // Remove item from cart
   const removeFromCart = ({
     product,
     options = { size: null, color: null },
@@ -126,12 +134,8 @@ export const StoreProvider = ({ children }) => {
     }
 
     try {
-      const res = await axios.post(
-        "/api/orders",
-        { items: cart },
-        { withCredentials: true }
-      );
-      setCart([]); // clear cart after successful order
+      const res = await api.post("/orders", { items: cart });
+      setCart([]); // clear cart
       return { success: true, order: res.data };
     } catch (err) {
       console.error("Order failed:", err);
@@ -150,11 +154,11 @@ export const StoreProvider = ({ children }) => {
         newProducts,
         cart,
         loading,
+        promo,
         addToCart,
         removeFromCart,
         updateQuantity,
         placeOrder,
-        promo,
       }}
     >
       {children}

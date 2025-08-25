@@ -7,28 +7,22 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Start seeding ...");
 
-  const seasons = ["Spring", "Summer", "Autumn", "Winter"];
-  for (const name of seasons) {
-    await prisma.season.upsert({
-      where: { name },
-      update: {},
-      create: { name },
-    });
-  }
-
   for (const prod of FakeProducts) {
-    const season = await prisma.season.findUnique({ where: { name: prod.season } });
+    // Ensure pics and variants are arrays
+    const picsArray = Array.isArray(prod.pics) ? prod.pics : [];
+    const variantsArray = Array.isArray(prod.variants) ? prod.variants : [];
 
     await prisma.product.create({
       data: {
         name: prod.name,
         description: prod.description || "No description",
-        price: prod.price,
-        seasonId: season.id,
-        mainPic: prod.mainPic,
-        variants: { create: prod.variants },
-        tags: { create: prod.tags },
-        pics: { create: prod.pics },
+        price: prod.price || 0,
+        season: prod.season || "Unknown",
+        mainPic: prod.mainPic || (picsArray[0] || ""),
+        pics: picsArray, // directly store as string array
+        variants: {
+          create: variantsArray, // each variant must have size, color, quantity
+        },
       },
     });
   }

@@ -13,7 +13,7 @@ export const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScroll(window.scrollY > 10);
+      setIsScroll(window.scrollY > 50);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -29,7 +29,7 @@ export const Navbar = () => {
   return (
     <nav
       className={cn(
-        "relative w-full transition-all duration-300",
+        "w-full transition-all duration-500",
         isScroll
           ? "bg-background/80 backdrop-blur-xs fixed  "
           : "bg-background"
