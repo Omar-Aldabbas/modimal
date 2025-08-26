@@ -56,7 +56,7 @@ export const Navbar = () => {
           />
         </li>
         <li>
-          <ul className="font-thin text-sm text-body/90 flex justify-between items-center gap-5">
+          <ul className="font-thin text-md text-body/90 flex justify-between items-center gap-5">
             {NavTags.map((tag, i) => (
               <li key={i} className="">
                 <button
@@ -73,22 +73,22 @@ export const Navbar = () => {
           <ul className="hidden md:flex gap-3 justify-center items-center">
             <li>
               <Link>
-                <Search size={20} className="hover:text-header" />
+                <Search size={24} className="hover:text-header" />
               </Link>
             </li>
             <li>
               <Link>
-                <Heart size={20} className="hover:text-header" />
+                <Heart size={24} className="hover:text-header" />
               </Link>
             </li>
             <li>
               <Link>
-                <User2 size={20} className="hover:text-header" />
+                <User2 size={24} className="hover:text-header" />
               </Link>
             </li>
             <li>
               <Link>
-                <LucideShoppingBag size={20} className="hover:text-header" />
+                <LucideShoppingBag size={24} className="hover:text-header" />
               </Link>
             </li>
             <li>
@@ -99,16 +99,16 @@ export const Navbar = () => {
       </ul>
 
       {activeTag && (
-        <div className="sticky top-0 max-h-[60vh] py-4 flex justify-around items-center w-full">
+        <div className="sticky top-0 min-h-[60vh] py-4 flex justify-around items-center w-full">
           <div className="grid grid-cols-3 gap-6 px-6 ">
             {Object.entries(activeTag.sections).map(([title, values]) => (
               <div key={title}>
-                <h4 className="text-sm mb-3 text-header">{title}</h4>
+                <h4 className="text-md mb-3 text-primary">{title}</h4>
                 <ul className="text-foreground space-y-2">
                   {values.map((value, i) => (
                     <li
                       key={i}
-                      className="hover:text-primary/90 hover:underline text-xs transition-all duration-500"
+                      className="hover:text-primary/90 hover:underline text-sm transition-all duration-500"
                     >
                       <Link>{value}</Link>
                     </li>
@@ -119,11 +119,11 @@ export const Navbar = () => {
           </div>
           <div className="flex justify-center items-center gap-8 p-3">
             <Link>
-            <div className="flex flex-col gap-2 p-1 hover:text-primary/90 hover:underline text-xs transition-all duration-500">
+            <div className="flex flex-col gap-2 p-1 hover:text-primary/90 hover:underline text-md transition-all duration-500">
               <img
                 src={formality}
                 alt="Our unique formal collection"
-                className="w-[150px] h-[200px] space-y-3 rounded-lg"
+                className="w-[240px] h-[300px] space-y-3 rounded-lg"
               />
               <h4 >
                 Formality Collection
@@ -131,11 +131,11 @@ export const Navbar = () => {
             </div>
             </Link>
             <Link>
-            <div className="flex flex-col gap-2 p-1 hover:text-primary/90 hover:underline text-xs transition-all duration-500">
+            <div className="flex flex-col gap-2 p-1 hover:text-primary/90 hover:underline text-md transition-all duration-500">
               <img
                 src={newWinter}
                 alt="For warm winters"
-                className="w-[150px] h-[200px] space-y-3 rounded-lg"
+                className="w-[240px] h-[300px] space-y-3 rounded-lg"
               />
               <h4 >
                 newWinter Collection

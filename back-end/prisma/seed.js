@@ -15,17 +15,19 @@ async function main() {
     const picsArray = Array.isArray(prod.pics) ? prod.pics : [];
     const variantsArray = Array.isArray(prod.variants) ? prod.variants : [];
 
+    console.log(`Seeding: ${prod.name}`); // optional
+
     await prisma.product.create({
       data: {
         name: prod.name,
         description: prod.description || "No description",
         price: prod.price || 0,
         season: prod.season || "Unknown",
-        mainPic: prod.mainPic || picsArray[0] || "",
+        mainPic: prod.mainPic || (picsArray.length ? picsArray[0] : ""),
         pics: picsArray,
-        variants: variantsArray, // directly store JSON array
+        variants: variantsArray,
         tags: prod.tags || [],
-        sales: randInt(40, 300), // must be top-level field
+        sales: randInt(40, 300),
       },
     });
   }

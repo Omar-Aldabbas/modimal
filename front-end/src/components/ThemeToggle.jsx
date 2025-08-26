@@ -25,9 +25,9 @@ export const ThemeToggle = () => {
   return (
     <button className="p-2 transition-color duration-300 rounded-full focus:outline-none" onClick={toggleTheme}>
       {isDark ? (
-        <MoonStarIcon size={16} className="text-primary" />
+        <MoonStarIcon size={20} className="text-primary" />
       ) : (
-        <Leaf size={16} className="text-primary"/>
+        <Leaf size={20} className="text-primary"/>
       )}
     </button>
   );

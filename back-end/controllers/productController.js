@@ -5,14 +5,16 @@ import AppError from "../utils/AppError.js";
 // ======================
 // CONFIG
 // ======================
-const IMAGE_BASE_URL = "http://localhost:3000/images";
+const GITHUB_BASE_URL =
+  "https://raw.githubusercontent.com/Omar-Aldabbas/modimal/main/back-end/public/images";
 
 // Helper: prepend full URL to images
 const mapImagesToURL = (product) => ({
   ...product,
-  mainPic: product.mainPic ? `${IMAGE_BASE_URL}/${product.mainPic}` : "",
-  pics: product.pics?.map((pic) => `${IMAGE_BASE_URL}/${pic}`) || [],
+  mainPic: product.mainPic ? `${GITHUB_BASE_URL}/${product.mainPic}` : "",
+  pics: product.pics?.map((pic) => `${GITHUB_BASE_URL}/${pic}`) || [],
 });
+
 
 // ======================
 // GET ALL PRODUCTS
@@ -121,7 +123,8 @@ export const getProductById = catchAsync(async (req, res, next) => {
 // CREATE PRODUCT
 // ======================
 export const createProduct = catchAsync(async (req, res, next) => {
-  const { name, description, price, season, mainPic, variants, tags, pics } = req.body;
+  const { name, description, price, season, mainPic, variants, tags, pics } =
+    req.body;
 
   const newProduct = await prisma.product.create({
     data: {
@@ -148,7 +151,8 @@ export const createProduct = catchAsync(async (req, res, next) => {
 // ======================
 export const updateProduct = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  const { name, description, price, season, mainPic, variants, tags, pics } = req.body;
+  const { name, description, price, season, mainPic, variants, tags, pics } =
+    req.body;
 
   const updatedProduct = await prisma.product.update({
     where: { id: parseInt(id) },

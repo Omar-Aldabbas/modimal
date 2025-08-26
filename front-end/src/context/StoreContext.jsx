@@ -11,6 +11,7 @@ export const StoreProvider = ({ children }) => {
   const [bestSelling, setBestSelling] = useState([]);
   const [newProducts, setNewProducts] = useState([]);
   const [cart, setCart] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const api = axios.create({
@@ -18,24 +19,24 @@ export const StoreProvider = ({ children }) => {
     withCredentials: true,
   });
 
+  // ======================
+  // FETCH PRODUCTS & WISHLIST
+  // ======================
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
 
+        // Fetch all products
         const res = await api.get("/products");
         const allProducts = res.data.data;
 
-        console.log(allProducts)
-
+        // Top selling
         const best = [...allProducts]
           .sort((a, b) => (b.sales || 0) - (a.sales || 0))
           .slice(0, 4);
 
-          console.log(best)
-
-
-        // Sort newest by createdAt
+        // Newest products
         const newest = [...allProducts]
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           .slice(0, 5);
@@ -43,6 +44,13 @@ export const StoreProvider = ({ children }) => {
         setProducts(allProducts);
         setBestSelling(best);
         setNewProducts(newest);
+
+        // Fetch wishlist if logged in
+        if (user) {
+          const wishRes = await api.get("/wishlist");
+          // Assume API returns full product objects in wishlist
+          setWishlist(wishRes.data.data);
+        }
       } catch (err) {
         console.error("Failed to fetch products:", err);
       } finally {
@@ -51,9 +59,11 @@ export const StoreProvider = ({ children }) => {
     };
 
     fetchProducts();
-  }, []);
+  }, [user]);
 
+  // ======================
   // CART FUNCTIONS
+  // ======================
   const addToCart = ({ product, variant, quantity = 1 }) => {
     setCart((prev) => {
       const index = prev.findIndex(
@@ -81,7 +91,7 @@ export const StoreProvider = ({ children }) => {
           size: variant.size,
           color: variant.color,
           quantity: Math.min(quantity, variant.quantity),
-          mainPic: product.mainPic,
+          mainPic: product.mainPic, // Already full URL
         },
       ];
     });
@@ -100,11 +110,7 @@ export const StoreProvider = ({ children }) => {
     );
   };
 
-  const updateQuantity = (
-    id,
-    options = { size: null, color: null },
-    newQty
-  ) => {
+  const updateQuantity = (id, options = { size: null, color: null }, newQty) => {
     setCart((prev) =>
       prev.map((item) =>
         item.id === id &&
@@ -116,6 +122,34 @@ export const StoreProvider = ({ children }) => {
     );
   };
 
+  // ======================
+  // WISHLIST FUNCTIONS
+  // ======================
+  const addToWishlist = async (productId) => {
+    if (!user) return alert("Login to add to wishlist");
+
+    try {
+      const res = await api.post("/wishlist", { productId });
+      setWishlist((prev) => [...prev, res.data.data]); // assuming API returns the added product
+    } catch (err) {
+      console.error("Failed to add to wishlist:", err);
+    }
+  };
+
+  const removeFromWishlist = async (productId) => {
+    if (!user) return;
+
+    try {
+      await api.delete(`/wishlist/${productId}`);
+      setWishlist((prev) => prev.filter((p) => p.id !== productId));
+    } catch (err) {
+      console.error("Failed to remove from wishlist:", err);
+    }
+  };
+
+  // ======================
+  // PLACE ORDER
+  // ======================
   const placeOrder = async () => {
     if (!user) {
       alert("You must be logged in to place an order!");
@@ -142,10 +176,13 @@ export const StoreProvider = ({ children }) => {
         bestSelling,
         newProducts,
         cart,
+        wishlist,
         loading,
         addToCart,
         removeFromCart,
         updateQuantity,
+        addToWishlist,
+        removeFromWishlist,
         placeOrder,
       }}
     >
