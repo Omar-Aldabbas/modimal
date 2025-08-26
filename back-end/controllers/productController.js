@@ -2,14 +2,16 @@ import prisma from "../src/db.js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/AppError.js";
 
-// Base URL for serving images
+// ======================
+// CONFIG
+// ======================
 const IMAGE_BASE_URL = "http://localhost:3000/images";
 
-// Helper function to map images to full URLs
+// Helper: prepend full URL to images
 const mapImagesToURL = (product) => ({
   ...product,
   mainPic: product.mainPic ? `${IMAGE_BASE_URL}/${product.mainPic}` : "",
-  pics: product.pics ? product.pics.map((pic) => `${IMAGE_BASE_URL}/${pic}`) : [],
+  pics: product.pics?.map((pic) => `${IMAGE_BASE_URL}/${pic}`) || [],
 });
 
 // ======================
@@ -33,6 +35,7 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
       pics: true,
       variants: true,
       tags: true,
+      sales: true,
       createdAt: true,
     },
     orderBy: { createdAt: "desc" },
@@ -56,10 +59,11 @@ export const getTopSellers = catchAsync(async (req, res, next) => {
     take: 10,
   });
 
-  if (!products.length) return next(new AppError("No top sellers yet!", 404));
+  if (!products.length) return next(new AppError("No top sellers yet", 404));
 
   res.status(200).json({
     status: "success",
+    results: products.length,
     data: products.map(mapImagesToURL),
   });
 });
@@ -73,10 +77,11 @@ export const getNewItems = catchAsync(async (req, res, next) => {
     take: 10,
   });
 
-  if (!products.length) return next(new AppError("No new items yet!", 404));
+  if (!products.length) return next(new AppError("No new items yet", 404));
 
   res.status(200).json({
     status: "success",
+    results: products.length,
     data: products.map(mapImagesToURL),
   });
 });
@@ -99,6 +104,7 @@ export const getProductById = catchAsync(async (req, res, next) => {
       pics: true,
       variants: true,
       tags: true,
+      sales: true,
       createdAt: true,
     },
   });
@@ -124,15 +130,15 @@ export const createProduct = catchAsync(async (req, res, next) => {
       price,
       season,
       mainPic,
-      variants, // JSON array of variants
-      tags,     // array of strings
-      pics,     // array of strings
+      variants,
+      tags,
+      pics,
     },
   });
 
   res.status(201).json({
     status: "success",
-    message: "Product created",
+    message: "Product created successfully",
     data: mapImagesToURL(newProduct),
   });
 });
@@ -146,21 +152,12 @@ export const updateProduct = catchAsync(async (req, res, next) => {
 
   const updatedProduct = await prisma.product.update({
     where: { id: parseInt(id) },
-    data: {
-      name,
-      description,
-      price,
-      season,
-      mainPic,
-      variants,
-      tags,
-      pics,
-    },
+    data: { name, description, price, season, mainPic, variants, tags, pics },
   });
 
   res.status(200).json({
     status: "success",
-    message: "Product updated",
+    message: "Product updated successfully",
     data: mapImagesToURL(updatedProduct),
   });
 });
@@ -175,6 +172,6 @@ export const deleteProduct = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    message: "Product deleted",
+    message: "Product deleted successfully",
   });
 });
