@@ -10,7 +10,7 @@ export const SustainabilitySection = () => {
       <div className="absolute inset-0 bg-black/40"></div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-2xl px-6">
+      <div className="relative z-10 w-full min-h-[41vh] px-6 ">
         <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
           Stylish sustainability in clothing promotes eco-friendly choices for a
           greater future

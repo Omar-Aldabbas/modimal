@@ -20,13 +20,27 @@ const mapImagesToURL = (product) => ({
 // GET ALL PRODUCTS
 // ======================
 export const getAllProducts = catchAsync(async (req, res, next) => {
-  const { season, tag } = req.query;
+  const { season, tag, sort, limit, page } = req.query;
 
+  // Pagination
+  const take = limit ? parseInt(limit) : 20;
+  const skip = page ? (parseInt(page) - 1) * take : 0;
+
+  // Sorting
+  let orderBy = { createdAt: "desc" }; // default: newest first
+  if (sort === "price-asc") orderBy = { price: "asc" };
+  if (sort === "price-desc") orderBy = { price: "desc" };
+  if (sort === "sales") orderBy = { sales: "desc" };
+
+  // Filtering
+  const where = {
+    ...(season && { season }),
+    ...(tag && { tags: { has: tag } }),
+  };
+
+  // Fetch products
   const products = await prisma.product.findMany({
-    where: {
-      ...(season && { season }),
-      ...(tag && { tags: { has: tag } }),
-    },
+    where,
     select: {
       id: true,
       name: true,
@@ -40,7 +54,9 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
       sales: true,
       createdAt: true,
     },
-    orderBy: { createdAt: "desc" },
+    orderBy,
+    skip,
+    take,
   });
 
   if (!products.length) return next(new AppError("No products found", 404));
@@ -48,9 +64,11 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     results: products.length,
+    page: page ? parseInt(page) : 1,
     data: products.map(mapImagesToURL),
   });
 });
+
 
 // ======================
 // GET TOP SELLERS

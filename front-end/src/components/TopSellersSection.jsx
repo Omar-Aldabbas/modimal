@@ -1,18 +1,42 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../context/StoreContext";
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { MobileTopSellers } from "./MobileTopSellers";
+import axios from "axios";
 
 export const TopSellersSection = () => {
-  const {
-    bestSelling,
-    addToCart,
-    wishlist,
-    addToWishlist,
-    removeFromWishlist,
-  } = useContext(StoreContext);
+  const { addToCart, wishlist, addToWishlist, removeFromWishlist } =
+    useContext(StoreContext);
 
+  const [bestSelling, setBestSelling] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTopSellers = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get("http://localhost:3000/api/v1/products", {
+          params: { sort: "sales", limit: 8 },
+          withCredentials: true,
+        });
+        setBestSelling(res.data.data);
+      } catch (err) {
+        console.error("Error fetching top sellers:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopSellers();
+  }, []);
+
+  if (loading)
+    return (
+      <p className="text-center py-10 text-foreground">
+        Loading top sellers...
+      </p>
+    );
   if (!bestSelling || bestSelling.length === 0) return null;
 
   const topThree = bestSelling.slice(0, 3);
@@ -21,7 +45,9 @@ export const TopSellersSection = () => {
     <section className="relative max-w-7xl mx-auto py-6 px-6 mt-10">
       <div className="hidden md:flex flex-col justify-center w-full">
         <div className="flex flex-col space-y-3 md:flex-row md:justify-between md:items-center mb-6">
-          <h2 className="text-3xl md:text-5xl text-bold cursor-default text-foreground">Best Sellers</h2>
+          <h2 className="text-3xl md:text-5xl text-bold cursor-default text-foreground">
+            Best Sellers
+          </h2>
           <div className="text-foreground hover:text-primary hover:underline transition-all duration-300">
             <Link
               to="/products?sort=best-selling"
@@ -109,7 +135,7 @@ export const TopSellersSection = () => {
         </div>
       </div>
 
-        <MobileTopSellers/>
+      <MobileTopSellers />
     </section>
   );
 };

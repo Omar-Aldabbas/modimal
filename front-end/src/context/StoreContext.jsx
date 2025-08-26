@@ -19,37 +19,62 @@ export const StoreProvider = ({ children }) => {
     withCredentials: true,
   });
 
+  const fetchProducts = async ({
+    season,
+    tag,
+    sort = "newest",
+    page = 1,
+    limit = 20,
+  } = {}) => {
+    try {
+      setLoading(true);
+
+      const params = {
+        ...(season && { season }),
+        ...(tag && { tag }),
+        sort,
+        page,
+        limit,
+      };
+
+      const res = await api.get("/products", { params });
+      const allProducts = res.data.data || [];
+
+      setProducts(allProducts);
+
+      const best = [...allProducts]
+        .sort((a, b) => (b.sales || 0) - (a.sales || 0))
+        .slice(0, 8);
+      setBestSelling(best);
+
+      const newest = [...allProducts]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5);
+      setNewProducts(newest);
+    } catch (err) {
+      console.error("fetchProducts error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchProducts = async () => {
+    fetchProducts(); // always fetch products on mount
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchWishlist = async () => {
       try {
-        setLoading(true);
-        const res = await api.get("/products");
-        const allProducts = res.data.data;
-
-        setProducts(allProducts);
-
-        const best = [...allProducts]
-          .sort((a, b) => (b.sales || 0) - (a.sales || 0))
-          .slice(0, 8);
-        setBestSelling(best);
-
-        const newest = [...allProducts]
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-          .slice(0, 5);
-        setNewProducts(newest);
-
-        if (user) {
-          const wishRes = await api.get("/wishlist");
-          setWishlist(wishRes.data.data);
-        }
+        const res = await api.get("/wishlist");
+        setWishlist(res.data.data || []);
       } catch (err) {
         console.error(err);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchProducts();
+    fetchWishlist();
   }, [user]);
 
   const addToCart = ({ product, variant, quantity = 1 }) => {
@@ -166,6 +191,7 @@ export const StoreProvider = ({ children }) => {
         cart,
         wishlist,
         loading,
+        fetchProducts,
         addToCart,
         removeFromCart,
         updateQuantity,

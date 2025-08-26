@@ -10,17 +10,25 @@ export const MobileTopSellers = () => {
     wishlist,
     addToWishlist,
     removeFromWishlist,
+    loading,
   } = useContext(StoreContext);
+  
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const touchStartX = useRef(0);
+    const touchEndX = useRef(0);
+    const autoPlayRef = useRef();
 
-  if (!bestSelling || bestSelling.length === 0) return null;
+  if (loading)
+    return (
+      <p className="text-center py-10 text-foreground">
+        Loading top sellers...
+      </p>
+    );
 
-  const mobileTopSellers = bestSelling.slice(0, 8); // max 8 products
-  const slidesCount = Math.ceil(mobileTopSellers.length / 2); // 2 cards per slide
+  // if (!bestSelling || bestSelling.length === 0) return null;
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
-  const autoPlayRef = useRef();
+  const mobileTopSellers = bestSelling.slice(0, 8);
+  const slidesCount = Math.ceil(mobileTopSellers.length / 2); 
 
   const nextSlide = () =>
     setCurrentSlide((prev) => (prev === slidesCount - 1 ? 0 : prev + 1));
@@ -53,7 +61,9 @@ export const MobileTopSellers = () => {
   return (
     <div className="md:hidden max-w-7xl mx-auto">
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl md:text-5xl text-bold cursor-default text-foreground mb-6">Best Sellers</h2>
+        <h2 className="text-3xl md:text-5xl text-bold cursor-default text-foreground mb-6">
+          Best Sellers
+        </h2>
         <Link
           to="/products?sort=best-selling"
           className="text-foreground hover:text-primary hover:underline transition-all duration-300 flex items-center justify-center space-x-2"
@@ -78,12 +88,12 @@ export const MobileTopSellers = () => {
             return (
               <div key={slideIndex} className="flex-shrink-0 w-full flex gap-2">
                 {pair.map((product) => {
-                  const isInWishlist = wishlist.includes(product.id);
+                  const isInWishlist = wishlist.some(
+                    (item) => item.id === product.id
+                  );
+
                   return (
-                    <div
-                      key={product.id}
-                      className="flex flex-col w-1/2 overflow-hidden"
-                    >
+                    <div key={product.id} className="flex flex-col w-1/2 overflow-hidden">
                       <div className="relative">
                         <Link to={`/products/${product.id}`}>
                           <img
@@ -114,12 +124,11 @@ export const MobileTopSellers = () => {
 
                       <div className="p-3 flex flex-1 justify-between">
                         <div className="flex flex-col gap-2">
-                          <h3 className="text-sm font-semibold mb-2 ">
-                            {product.name.slice(0, 20).length >= 20 ? product.name.slice(0, 20) + '...' : product.name}
+                          <h3 className="text-sm font-semibold mb-2">
+                            {product.name.length > 20
+                              ? product.name.slice(0, 20) + "..."
+                              : product.name}
                           </h3>
-                          {/* <p className="text-gray-500 text-[12px] mb-2">
-                            {product.description.slice(0, 15)}...
-                          </p> */}
                         </div>
                         <div className="flex flex-col">
                           <span className="text-sm font-semibold mb-2">

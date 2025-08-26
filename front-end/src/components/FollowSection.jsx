@@ -18,7 +18,7 @@ export const FollowSection = () => {
   return (
     <section className="w-full py-10 mt-5">
       <div className="max-w-7xl mx-auto flex flex-col gap-6 px-6">
-        <h2 className="text-3xl md:text-5xl font-bold cursor-default">
+        <h2 className="text-3xl md:text-5xl text-bold cursor-default text-foreground">
           Follow us @modimal
         </h2>
 
