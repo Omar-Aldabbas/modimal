@@ -19,40 +19,31 @@ export const StoreProvider = ({ children }) => {
     withCredentials: true,
   });
 
-  // ======================
-  // FETCH PRODUCTS & WISHLIST
-  // ======================
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-
-        // Fetch all products
         const res = await api.get("/products");
         const allProducts = res.data.data;
 
-        // Top selling
+        setProducts(allProducts);
+
         const best = [...allProducts]
           .sort((a, b) => (b.sales || 0) - (a.sales || 0))
-          .slice(0, 4);
+          .slice(0, 8);
+        setBestSelling(best);
 
-        // Newest products
         const newest = [...allProducts]
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           .slice(0, 5);
-
-        setProducts(allProducts);
-        setBestSelling(best);
         setNewProducts(newest);
 
-        // Fetch wishlist if logged in
         if (user) {
           const wishRes = await api.get("/wishlist");
-          // Assume API returns full product objects in wishlist
           setWishlist(wishRes.data.data);
         }
       } catch (err) {
-        console.error("Failed to fetch products:", err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -61,10 +52,9 @@ export const StoreProvider = ({ children }) => {
     fetchProducts();
   }, [user]);
 
-  // ======================
-  // CART FUNCTIONS
-  // ======================
   const addToCart = ({ product, variant, quantity = 1 }) => {
+    if (!variant) variant = product.variants[0];
+
     setCart((prev) => {
       const index = prev.findIndex(
         (item) =>
@@ -91,7 +81,7 @@ export const StoreProvider = ({ children }) => {
           size: variant.size,
           color: variant.color,
           quantity: Math.min(quantity, variant.quantity),
-          mainPic: product.mainPic, // Already full URL
+          mainPic: product.mainPic,
         },
       ];
     });
@@ -110,7 +100,11 @@ export const StoreProvider = ({ children }) => {
     );
   };
 
-  const updateQuantity = (id, options = { size: null, color: null }, newQty) => {
+  const updateQuantity = (
+    id,
+    options = { size: null, color: null },
+    newQty
+  ) => {
     setCart((prev) =>
       prev.map((item) =>
         item.id === id &&
@@ -122,17 +116,14 @@ export const StoreProvider = ({ children }) => {
     );
   };
 
-  // ======================
-  // WISHLIST FUNCTIONS
-  // ======================
   const addToWishlist = async (productId) => {
     if (!user) return alert("Login to add to wishlist");
 
     try {
       const res = await api.post("/wishlist", { productId });
-      setWishlist((prev) => [...prev, res.data.data]); // assuming API returns the added product
+      setWishlist((prev) => [...prev, res.data.data]);
     } catch (err) {
-      console.error("Failed to add to wishlist:", err);
+      console.error(err);
     }
   };
 
@@ -143,13 +134,10 @@ export const StoreProvider = ({ children }) => {
       await api.delete(`/wishlist/${productId}`);
       setWishlist((prev) => prev.filter((p) => p.id !== productId));
     } catch (err) {
-      console.error("Failed to remove from wishlist:", err);
+      console.error(err);
     }
   };
 
-  // ======================
-  // PLACE ORDER
-  // ======================
   const placeOrder = async () => {
     if (!user) {
       alert("You must be logged in to place an order!");
@@ -161,7 +149,7 @@ export const StoreProvider = ({ children }) => {
       setCart([]);
       return { success: true, order: res.data };
     } catch (err) {
-      console.error("Order failed:", err);
+      console.error(err);
       return {
         success: false,
         message: err.response?.data?.message || err.message,

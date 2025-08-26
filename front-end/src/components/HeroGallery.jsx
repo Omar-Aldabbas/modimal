@@ -33,7 +33,7 @@ export const HeroGallery = () => {
     const play = () => {
       autoPlayRef.current();
     };
-    const interval = setInterval(play, 5000);
+    const interval = setInterval(play, 7000);
     return () => clearInterval(interval);
   }, []);
 
@@ -75,7 +75,7 @@ export const HeroGallery = () => {
         ))}
       </div>
 
-      <div className="hidden md:flex absolute top-1/2 transform -translate-y-1/2 w-full justify-between px-6">
+      <div className="hidden md:flex absolute top-1/2 transform -translate-y-1/2 w-full justify-between ">
         <button
           onClick={prevSlide}
           className="p-3 bg-opacity-50 text-black rounded-full hover:bg-black/70 transition"
