@@ -31,7 +31,10 @@ export const HeroCard7 = () => {
         </h2>
 
         <Link
-          to="/products?season=Winter"
+          to={{
+            pathname: "/products",
+            search: "?seasin=winter",
+          }}
           className="relative inline-block group px-6 py-3 bg-iceBlue-600 text-white font-bold text-lg shadow-lg overflow-hidden border-2 border-iceBlue-500 hover:bg-iceBlue-700 transition"
         >
           <span className="absolute inset-0 bg-blue-400 opacity-20 scale-0 group-hover:scale-125 transform origin-center transition-transform duration-500"></span>

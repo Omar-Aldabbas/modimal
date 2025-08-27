@@ -20,17 +20,23 @@ export const HeroCard3 = () => {
         "
       >
         <h2 className="text-3xl md:text-5xl text-white italic font-bold drop-shadow-lg">
-          Step into the <span className="text-sky-400">Autumn Chill</span> — 
-          where crisp air meets <span className="text-sky-300">icy elegance</span>.
+          Step into the <span className="text-sky-400">Autumn Chill</span> —
+          where crisp air meets{" "}
+          <span className="text-sky-300">icy elegance</span>.
         </h2>
 
         {/* Unique button */}
         <Link
-          to="/products?season=Autumn"
+          to={{
+            pathname: "/products",
+            search: "?season=Autumn",
+          }}
           className="inline-block relative px-6 py-3 font-medium text-lg text-white border-2 border-sky-400 overflow-hidden group"
         >
           <span className="absolute inset-0 bg-sky-400 group-hover:translate-x-0 group-hover:translate-y-0 transform -translate-x-full -translate-y-full transition-transform duration-300"></span>
-          <span className="relative z-10 group-hover:text-black">Ice Autumn</span>
+          <span className="relative z-10 group-hover:text-black">
+            Ice Autumn
+          </span>
         </Link>
       </div>
     </div>

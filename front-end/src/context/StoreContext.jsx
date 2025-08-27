@@ -9,59 +9,112 @@ export const StoreProvider = ({ children }) => {
 
   const [products, setProducts] = useState([]);
   const [bestSelling, setBestSelling] = useState([]);
-  const [newProducts, setNewProducts] = useState([]);
+  const [newItems, setNewItems] = useState([]);
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const limit = 6;
+
+  // Filters
+  const [filters, setFilters] = useState({
+    season: null,
+    priceMin: null,
+    priceMax: null,
+    sort: null,
+    search: "",
+  });
 
   const api = axios.create({
     baseURL: "http://localhost:3000/api/v1",
     withCredentials: true,
   });
 
-  const fetchProducts = async ({
-    season,
-    tag,
-    sort = "newest",
-    page = 1,
-    limit = 20,
-  } = {}) => {
+  // ======================
+  // PRODUCTS
+  // ======================
+  const fetchProducts = async (pageNumber = page, filterObj = filters) => {
     try {
       setLoading(true);
+      const priceMin = filterObj.priceMin != null ? Number(filterObj.priceMin) : undefined;
+      const priceMax = filterObj.priceMax != null ? Number(filterObj.priceMax) : undefined;
 
       const params = {
-        ...(season && { season }),
-        ...(tag && { tag }),
-        sort,
-        page,
+        page: pageNumber,
         limit,
+        season: filterObj.season || undefined,
+        sort: filterObj.sort || undefined,
+        search: filterObj.search || undefined,
+        priceMin,
+        priceMax,
       };
 
       const res = await api.get("/products", { params });
-      const allProducts = res.data.data || [];
+      const data = res.data.data || [];
 
-      setProducts(allProducts);
-
-      const best = [...allProducts]
-        .sort((a, b) => (b.sales || 0) - (a.sales || 0))
-        .slice(0, 8);
-      setBestSelling(best);
-
-      const newest = [...allProducts]
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 5);
-      setNewProducts(newest);
+      setProducts(data);
+      setPage(res.data.page);
+      setPages(res.data.pages);
+      setTotal(res.data.total);
     } catch (err) {
-      console.error("fetchProducts error:", err);
+      console.error(err);
+      setProducts([]);
+      setPage(1);
+      setPages(1);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchBestSelling = async () => {
+    try {
+      const res = await api.get("/products/filters/top-sellers");
+      setBestSelling(res.data.data || []);
+    } catch (err) {
+      console.error(err);
+      setBestSelling([]);
+    }
+  };
+
+  const fetchNewItems = async () => {
+    try {
+      const res = await api.get("/products/filters/new-items");
+      setNewItems(res.data.data || []);
+    } catch (err) {
+      console.error(err);
+      setNewItems([]);
+    }
+  };
+
+  const fetchProductById = async (id) => {
+    try {
+      const res = await api.get(`/products/${id}`);
+      return res.data.data;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  };
+
+  // Fetch products when filters change
   useEffect(() => {
-    fetchProducts(); // always fetch products on mount
+    fetchProducts(1, filters);
+  }, [filters]);
+
+  // Fetch top sellers and new items on mount
+  useEffect(() => {
+    fetchBestSelling();
+    fetchNewItems();
   }, []);
 
+  // ======================
+  // WISHLIST
+  // ======================
   useEffect(() => {
     if (!user) return;
 
@@ -73,10 +126,32 @@ export const StoreProvider = ({ children }) => {
         console.error(err);
       }
     };
-
     fetchWishlist();
   }, [user]);
 
+  const addToWishlist = async (productId) => {
+    if (!user) return alert("Login to add to wishlist");
+    try {
+      const res = await api.post("/wishlist", { productId });
+      setWishlist((prev) => [...prev, res.data.data]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const removeFromWishlist = async (productId) => {
+    if (!user) return;
+    try {
+      await api.delete(`/wishlist/${productId}`);
+      setWishlist((prev) => prev.filter((p) => p.id !== productId));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ======================
+  // CART
+  // ======================
   const addToCart = ({ product, variant, quantity = 1 }) => {
     if (!variant) variant = product.variants[0];
 
@@ -125,11 +200,7 @@ export const StoreProvider = ({ children }) => {
     );
   };
 
-  const updateQuantity = (
-    id,
-    options = { size: null, color: null },
-    newQty
-  ) => {
+  const updateQuantity = (id, options = { size: null, color: null }, newQty) => {
     setCart((prev) =>
       prev.map((item) =>
         item.id === id &&
@@ -141,44 +212,18 @@ export const StoreProvider = ({ children }) => {
     );
   };
 
-  const addToWishlist = async (productId) => {
-    if (!user) return alert("Login to add to wishlist");
-
-    try {
-      const res = await api.post("/wishlist", { productId });
-      setWishlist((prev) => [...prev, res.data.data]);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const removeFromWishlist = async (productId) => {
-    if (!user) return;
-
-    try {
-      await api.delete(`/wishlist/${productId}`);
-      setWishlist((prev) => prev.filter((p) => p.id !== productId));
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
+  // ======================
+  // ORDERS
+  // ======================
   const placeOrder = async () => {
-    if (!user) {
-      alert("You must be logged in to place an order!");
-      return;
-    }
-
+    if (!user) return alert("Login required to place an order");
     try {
       const res = await api.post("/orders", { items: cart });
       setCart([]);
       return { success: true, order: res.data };
     } catch (err) {
       console.error(err);
-      return {
-        success: false,
-        message: err.response?.data?.message || err.message,
-      };
+      return { success: false, message: err.response?.data?.message || err.message };
     }
   };
 
@@ -187,11 +232,20 @@ export const StoreProvider = ({ children }) => {
       value={{
         products,
         bestSelling,
-        newProducts,
+        newItems,
         cart,
         wishlist,
         loading,
         fetchProducts,
+        fetchBestSelling,
+        fetchNewItems,
+        fetchProductById,
+        page,
+        pages,
+        total,
+        limit,
+        filters,
+        setFilters,
         addToCart,
         removeFromCart,
         updateQuantity,

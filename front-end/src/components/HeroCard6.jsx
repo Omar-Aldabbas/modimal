@@ -23,7 +23,10 @@ export const HeroCard6 = () => {
         </h2>
 
         <Link
-          to="/products?season=spring"
+          to={{
+            pathname: "/products",
+            search: "?seasin=spring",
+          }}
           className="relative inline-block group px-6 py-3 bg-pink-600 text-white font-semibold text-lg shadow-lg overflow-hidden border-2 border-pink-500 hover:bg-pink-700 transition"
         >
           <span className="absolute inset-0 bg-pink-400 opacity-30 scale-0 group-hover:scale-150 transition-transform duration-500"></span>

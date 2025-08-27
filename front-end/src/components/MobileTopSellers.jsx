@@ -1,22 +1,21 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { StoreContext } from "../context/StoreContext";
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
 
 export const MobileTopSellers = () => {
   const {
-    bestSelling,
+    bestSelling = [],
     addToCart,
     wishlist,
     addToWishlist,
     removeFromWishlist,
     loading,
   } = useContext(StoreContext);
-  
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const touchStartX = useRef(0);
-    const touchEndX = useRef(0);
-    const autoPlayRef = useRef();
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   if (loading)
     return (
@@ -25,27 +24,20 @@ export const MobileTopSellers = () => {
       </p>
     );
 
-  // if (!bestSelling || bestSelling.length === 0) return null;
+  if (!bestSelling.length)
+    return (
+      <p className="text-center py-10 text-foreground">
+        No top sellers available.
+      </p>
+    );
 
   const mobileTopSellers = bestSelling.slice(0, 8);
-  const slidesCount = Math.ceil(mobileTopSellers.length / 2); 
+  const slidesCount = Math.ceil(mobileTopSellers.length / 2);
 
   const nextSlide = () =>
     setCurrentSlide((prev) => (prev === slidesCount - 1 ? 0 : prev + 1));
   const prevSlide = () =>
     setCurrentSlide((prev) => (prev === 0 ? slidesCount - 1 : prev - 1));
-
-  // Auto-play
-  useEffect(() => {
-    autoPlayRef.current = nextSlide;
-  }, [slidesCount]);
-
-  useEffect(() => {
-    if (slidesCount > 1) {
-      const interval = setInterval(() => autoPlayRef.current(), 7000);
-      return () => clearInterval(interval);
-    }
-  }, [slidesCount]);
 
   const handleTouchStart = (e) => {
     touchStartX.current = e.changedTouches[0].screenX;

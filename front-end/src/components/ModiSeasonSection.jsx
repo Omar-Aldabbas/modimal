@@ -49,7 +49,7 @@ export const ModiSeasonSection = () => {
           <Link
             key={season.season}
             to={`/products?season=${season.season}`}
-            className="block w-full transform transition duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary lg:px-7 py-2 border border-foreground"
+            className="block w-full transform transition duration-300 hover:shadow-lg hover:shadow-primary lg:px-7 py-2 border border-foreground"
           >
             <img
               src={season.img}

@@ -12,12 +12,15 @@ export const HeroCard5 = () => {
 
       <div className="relative z-10 max-w-lg text-center space-y-6">
         <h2 className="text-3xl md:text-5xl font-extrabold italic text-blue-100 drop-shadow-[2px_2px_4px_rgba(0,0,0,0.7)]">
-          <span className="text-blue-400">Have a Great Jeans</span> — 
-          casual comfort meets effortless <span className="text-blue-200">style</span>.
+          <span className="text-blue-400">Have a Great Jeans</span> — casual
+          comfort meets effortless <span className="text-blue-200">style</span>.
         </h2>
 
         <Link
-          to="/products?tag=tshirt,casual"
+          to={{
+            pathname: "/products",
+            search: "?search=jeans",
+          }}
           className="relative inline-block px-6 py-3 font-bold text-lg text-white border-2 border-blue-400 overflow-hidden group hover:text-black"
         >
           {/* Button hover effect */}
@@ -28,4 +31,3 @@ export const HeroCard5 = () => {
     </div>
   );
 };
-

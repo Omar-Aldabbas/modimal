@@ -1,8 +1,18 @@
 import { Leaf } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export const Logo = ({className ='', onClick}) => {
+export const Logo = ({ className = '', onClick }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    // First, trigger any custom onClick passed as a prop
+    if (onClick) onClick();
+    // Then navigate to home
+    navigate("/");
+  };
+
   return (
-    <div onClick={onClick} className={`flex flex-col items-center ${className} `}>
+    <div onClick={handleClick} className={`flex flex-col items-center ${className}`}>
       <h2 className="text-3xl text-logo font-bold flex items-center tracking-widest font-logo">
         modimal
         <span>

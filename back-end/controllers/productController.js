@@ -15,30 +15,40 @@ const mapImagesToURL = (product) => ({
   pics: product.pics?.map((pic) => `${GITHUB_BASE_URL}/${pic}`) || [],
 });
 
-
 // ======================
 // GET ALL PRODUCTS
 // ======================
 export const getAllProducts = catchAsync(async (req, res, next) => {
-  const { season, tag, sort, limit, page } = req.query;
+  const { season, tag, sort, limit, page, search, priceMin, priceMax } = req.query;
 
-  // Pagination
-  const take = limit ? parseInt(limit) : 20;
-  const skip = page ? (parseInt(page) - 1) * take : 0;
+  const take = limit ? parseInt(limit) : 6;
+  const currentPage = page ? parseInt(page) : 1;
+  const skip = (currentPage - 1) * take;
+
+  // Build filters
+  const where = {
+    ...(season && {
+      season: season.charAt(0).toUpperCase() + season.slice(1).toLowerCase(),
+    }),
+    ...(tag && { tags: { has: tag } }),
+    ...(search && { name: { contains: search, mode: "insensitive" } }),
+    ...(priceMin && { price: { gte: Number(priceMin) } }),
+    ...(priceMax && {
+      price: {
+        ...(priceMin ? { gte: Number(priceMin) } : {}),
+        lte: Number(priceMax),
+      },
+    }),
+  };
 
   // Sorting
-  let orderBy = { createdAt: "desc" }; // default: newest first
+  let orderBy = { createdAt: "desc" };
   if (sort === "price-asc") orderBy = { price: "asc" };
   if (sort === "price-desc") orderBy = { price: "desc" };
   if (sort === "sales") orderBy = { sales: "desc" };
 
-  // Filtering
-  const where = {
-    ...(season && { season }),
-    ...(tag && { tags: { has: tag } }),
-  };
+  const total = await prisma.product.count({ where });
 
-  // Fetch products
   const products = await prisma.product.findMany({
     where,
     select: {
@@ -59,15 +69,16 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
     take,
   });
 
-  if (!products.length) return next(new AppError("No products found", 404));
-
   res.status(200).json({
     status: "success",
     results: products.length,
-    page: page ? parseInt(page) : 1,
+    total,
+    page: currentPage,
+    pages: Math.ceil(total / take),
     data: products.map(mapImagesToURL),
   });
 });
+
 
 
 // ======================

@@ -17,12 +17,16 @@ export const HeroCard2 = () => {
         "
       >
         <h2 className="text-3xl md:text-5xl text-purple-300 italic font-bold drop-shadow-xl cursor-default">
-          Embrace the <span className="text-purple-500">Shadow Veil</span> — where timeless mystery meets modern{" "}
+          Embrace the <span className="text-purple-500">Shadow Veil</span> —
+          where timeless mystery meets modern{" "}
           <span className="text-purple-400">style</span>.
         </h2>
 
         <Link
-          to="/products?tag=dress"
+          to={{
+            pathname: "/products",
+            search: "?search=dress",
+          }}
           className="inline-block bg-purple-600 text-white px-6 py-3 font-medium text-lg shadow-md hover:bg-purple-700 transition border border-3 border-background"
         >
           Explore Dresses

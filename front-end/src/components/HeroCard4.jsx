@@ -12,12 +12,15 @@ export const HeroCard4 = () => {
 
       <div className="relative z-10 max-w-lg md:absolute md:top-1/2 md:left-8 transform md:-translate-y-1/2 text-left space-y-6">
         <h2 className="text-3xl md:text-5xl font-extrabold italic text-red-600 drop-shadow-[2px_2px_4px_rgba(0,0,0,0.7)]">
-          Enter the <span className="text-red-800">Bloody Streets</span> — chaos, 
-          rebellion, and raw <span className="text-red-500">style</span>.
+          Enter the <span className="text-red-800">Bloody Streets</span> —
+          chaos, rebellion, and raw <span className="text-red-500">style</span>.
         </h2>
 
         <Link
-          to="/products?tag=casual,jeans"
+          to={{
+            pathname: "/products",
+            search: "?search=casual",
+          }}
           className="relative inline-block px-6 py-3 font-bold text-lg text-white border-2 border-red-800 overflow-hidden group hover:text-black"
         >
           {/* Bloody jagged hover background */}

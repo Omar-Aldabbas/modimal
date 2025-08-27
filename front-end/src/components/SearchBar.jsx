@@ -5,7 +5,7 @@ export const SearchBar = ({ onSearch }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    onSearch(query);
+    onSearch(query); // send query back to ProductsPage
   };
 
   return (
@@ -18,11 +18,11 @@ export const SearchBar = ({ onSearch }) => {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search products..."
-        className="flex-1 px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-primary focus:outline-none text-foreground"
+        className="flex-1 px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-primary focus:outline-none text-foreground"
       />
       <button
         type="submit"
-        className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/80 transition"
+        className="bg-primary text-white px-4 py-2 hover:bg-primary/80 transition"
       >
         Search
       </button>
