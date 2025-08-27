@@ -9,24 +9,25 @@ export const ProductCard = ({
   addToCart,
 }) => {
   const isInWishlist = wishlist.some((item) => item.id === product.id);
+  const hasVariants = product.variants?.length > 0;
 
   return (
-    <div className="flex flex-col overflow-hidden hover:shadow-md transition-all duration-300 shadow-primary gap-5  lg:gap-0">
-      <div className="relative h-[70%]">
-        <Link to={`/products/${product.id}`}>
-          <img
-            src={product.mainPic}
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
-        </Link>
+    <div className="flex flex-col overflow-hidden gap-2 shadow-primary">
+      {/* IMAGE */}
+      <Link to={`/products/${product.id}`} className="relative h-[200px] sm:h-[250px] md:h-[280px] lg:h-[300px]">
+        <img
+          src={product.mainPic}
+          alt={product.name}
+          className="w-full h-full object-cover"
+        />
 
         <button
-          onClick={() =>
+          onClick={(e) => {
+            e.preventDefault();
             isInWishlist
               ? removeFromWishlist(product.id)
-              : addToWishlist(product.id)
-          }
+              : addToWishlist(product.id);
+          }}
           className="absolute top-2 right-2 p-1 hover:text-white transition cursor-pointer"
         >
           {isInWishlist ? (
@@ -35,18 +36,19 @@ export const ProductCard = ({
             <Heart className="text-gray-600 hover:text-red-500 w-5 h-5" />
           )}
         </button>
-      </div>
+      </Link>
 
-      {/* INFO - 30% */}
-      <div className="flex flex-row lg:h-[30%] p-1">
-        {/* Left - 75% */}
-        <div className="w-3/4 flex flex-col justify-center">
-          <h3 className="text-sm font-semibold mb-1 flex items-center">
-            {product.name.length > 20
-              ? product.name.slice(0, 20) + "..."
-              : product.name}
-            <span className="inline-block w-3 h-3 ml-2"></span>
-          </h3>
+      {/* INFO */}
+      <div className="flex flex-col sm:flex-row p-2 gap-2">
+        {/* Left - Title & Description */}
+        <div className="flex-1 flex flex-col justify-center">
+          <Link to={`/products/${product.id}`}>
+            <h3 className="text-sm font-semibold mb-1">
+              {product.name.length > 20
+                ? product.name.slice(0, 20) + "..."
+                : product.name}
+            </h3>
+          </Link>
           <p className="text-gray-500 text-xs">
             {product.description.length > 40
               ? product.description.slice(0, 40) + "..."
@@ -54,17 +56,22 @@ export const ProductCard = ({
           </p>
         </div>
 
-        {/* Right - 25% */}
-        <div className="w-1/4 flex flex-col justify-center items-center">
-          <span className="font-bold text-sm mb-2">${product.price}</span>
+        {/* Right - Price & Button */}
+        <div className="flex flex-row sm:flex-col justify-between sm:justify-center items-center gap-2 w-full sm:w-auto">
+          <span className="font-bold text-sm">{`$${product.price}`}</span>
           <button
             onClick={() =>
+              hasVariants &&
               addToCart({ product, variant: product.variants[0], quantity: 1 })
             }
-            className="text-xs px-3 py-1 bg-gradient-to-r from-primary to-primary/80 text-white font-semibold shadow-lg relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:outline-1 -foreground"
+            disabled={!hasVariants}
+            className={`text-xs px-3 py-1 font-semibold relative overflow-hidden transition-all duration-300 ${
+              hasVariants
+                ? "bg-gradient-to-r from-primary to-primary/80 text-white shadow-lg hover:shadow-xl"
+                : "bg-gray-300 text-gray-600 cursor-not-allowed"
+            }`}
           >
-            <span className="relative z-10">Add</span>
-            <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-40 transition-opacity duration-300"></span>
+            {hasVariants ? "Add" : "Out of Stock"}
           </button>
         </div>
       </div>

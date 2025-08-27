@@ -24,7 +24,6 @@ export const ProductsPage = () => {
   const location = useLocation();
   const [localSearch, setLocalSearch] = useState(filters.search || "");
 
-  // Update filters from query params when URL changes
   useEffect(() => {
     const params = new URLSearchParams(location.search);
 
@@ -42,14 +41,12 @@ export const ProductsPage = () => {
     fetchProducts(pageParam, newFilters);
   }, [location.search]);
 
-  // Apply filters
   const handleApplyFilters = (newFilters) => {
     const updated = { ...filters, ...newFilters };
     setFilters(updated);
     fetchProducts(1, updated);
   };
 
-  // Clear filters
   const handleClearFilters = () => {
     const cleared = { season: null, priceMin: null, priceMax: null, search: "" };
     setFilters(cleared);
@@ -57,7 +54,6 @@ export const ProductsPage = () => {
     fetchProducts(1, cleared);
   };
 
-  // Search submit
   const handleSearchSubmit = (searchQuery) => {
     const updated = { ...filters, search: searchQuery };
     setFilters(updated);
@@ -65,7 +61,6 @@ export const ProductsPage = () => {
     fetchProducts(1, updated);
   };
 
-  // Pagination
   const handleNextPage = () => {
     if (page < pages) {
       fetchProducts(page + 1, filters);
@@ -85,7 +80,6 @@ export const ProductsPage = () => {
       <SearchBar value={localSearch} onSearch={handleSearchSubmit} />
 
       <div className="mt-6 flex flex-col lg:flex-row gap-6">
-        {/* Filters Sidebar */}
         <div className="w-full lg:w-1/4">
           <FiltersSidebar
             filters={filters}
@@ -94,7 +88,6 @@ export const ProductsPage = () => {
           />
         </div>
 
-        {/* Products + Pagination */}
         <div className="flex-1 flex flex-col">
           {loading ? (
             <p className="text-center text-gray-500 py-10">Loading...</p>
@@ -110,7 +103,6 @@ export const ProductsPage = () => {
                 removeFromWishlist={removeFromWishlist}
               />
 
-              {/* Pagination */}
               {pages > 1 && (
                 <div className="flex justify-center items-center mt-8 gap-6">
                   <button

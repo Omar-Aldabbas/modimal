@@ -1,23 +1,26 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { NavTags } from "../data/NavTags";
 import { Logo } from "./Logo";
 import { User2, Heart, Search, LucideShoppingBag, Menu, X, ChevronDown } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
+import { UserContext } from "../context/UserContext";
 
 export const MobileNavbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileDropdown, setMobileDropdown] = useState(null);
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => (document.body.style.overflow = "");
   }, [mobileOpen]);
+
+  const handleNavigate = (path) => {
+    setMobileOpen(false); 
+    navigate(path);
+  };
 
   const toggleMobileDropdown = (tag) => {
     setMobileDropdown(mobileDropdown === tag.title ? null : tag.title);
@@ -27,56 +30,52 @@ export const MobileNavbar = () => {
     <nav className="md:hidden sticky top-0 z-50">
       {/* Top bar */}
       <div className="flex justify-between items-center px-4 py-3 bg-background shadow-sm">
-        <Logo className="cursor-pointer" />
-        <div className="flex items-center gap-4">
-          <Link>
-            <LucideShoppingBag size={24} className="p-1 rounded hover:bg-primary/20 transition" />
-          </Link>
+        <Logo className="cursor-pointer" onClick={() => handleNavigate("/")} />
+        <div className="flex items-center gap-3">
+          <button onClick={() => handleNavigate("/cart")} className="p-2 rounded hover:bg-primary/10 transition">
+            <LucideShoppingBag size={24} />
+          </button>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded hover:bg-primary/20 transition"
+            className="p-2 rounded hover:bg-primary/10 transition"
           >
             {mobileOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
       </div>
 
-      {/* Full-screen mobile menu */}
+      {/* Mobile menu */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-start pt-24 px-6 space-y-6 transition-opacity duration-300">
-          {/* Close button at top-right */}
+        <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col">
+          {/* Close button */}
           <button
             onClick={() => setMobileOpen(false)}
-            className="absolute top-4 right-4 p-2 rounded hover:bg-primary/20 transition"
+            className="absolute top-4 right-4 p-2 rounded hover:bg-primary/10 transition"
           >
             <X size={28} />
           </button>
 
-          {/* Theme Toggle */}
-          <div className="w-full flex justify-center mb-6">
+          {/* Top actions */}
+          <div className="flex justify-center items-center mt-20 gap-6 px-4">
             <ThemeToggle />
-          </div>
-
-          {/* Icons */}
-          <div className="flex gap-8 mb-6">
-            <Link className="p-2 rounded hover:bg-primary/20 transition">
+            <button onClick={() => handleNavigate(user ? "/account" : "/login")} className="p-2 rounded hover:bg-primary/10 transition">
               <User2 size={24} />
-            </Link>
-            <Link className="p-2 rounded hover:bg-primary/20 transition">
+            </button>
+            <button onClick={() => handleNavigate(user ? "/wishlist" : "/login")} className="p-2 rounded hover:bg-primary/10 transition">
               <Heart size={24} />
-            </Link>
-            <Link className="p-2 rounded hover:bg-primary/20 transition">
+            </button>
+            <button onClick={() => handleNavigate("/products")} className="p-2 rounded hover:bg-primary/10 transition">
               <Search size={24} />
-            </Link>
+            </button>
           </div>
 
           {/* NavTags Accordion */}
-          <div className="w-full flex flex-col gap-4 overflow-y-auto max-h-[calc(100vh-6rem)] pb-6">
+          <div className="flex-1 overflow-y-auto mt-6 px-4 pb-8">
             {NavTags.map((tag, i) => (
-              <div key={i} className="w-full">
+              <div key={i} className="w-full mb-2">
                 <button
                   onClick={() => toggleMobileDropdown(tag)}
-                  className="w-full flex justify-between items-center py-3 px-5 bg-primary/5 rounded-lg font-semibold text-primary text-base transition-colors hover:bg-primary/10"
+                  className="w-full flex justify-between items-center py-3 px-4 rounded-md font-semibold text-primary text-base transition hover:bg-primary/5"
                 >
                   {tag.title}
                   <ChevronDown
@@ -85,20 +84,24 @@ export const MobileNavbar = () => {
                   />
                 </button>
 
-                {/* Smooth dropdown */}
                 <div
                   className={`overflow-hidden transition-all duration-300 ${
-                    mobileDropdown === tag.title ? "max-h-[500px] mt-2" : "max-h-0"
+                    mobileDropdown === tag.title ? "max-h-[1000px] mt-2" : "max-h-0"
                   }`}
                 >
-                  <ul className="flex flex-col gap-2 pl-6">
+                  <ul className="flex flex-col gap-2 pl-4">
                     {Object.entries(tag.sections).map(([section, values], idx) => (
                       <li key={idx}>
                         <h4 className="font-medium text-sm text-primary mb-1">{section}</h4>
                         <ul className="flex flex-col gap-1">
                           {values.map((value, j) => (
                             <li key={j}>
-                              <Link className="hover:text-primary/90 hover:underline transition">{value}</Link>
+                              <button
+                                onClick={() => handleNavigate(`/products?tag=${value}`)}
+                                className="text-left hover:text-primary/90 hover:underline transition text-sm w-full"
+                              >
+                                {value}
+                              </button>
                             </li>
                           ))}
                         </ul>

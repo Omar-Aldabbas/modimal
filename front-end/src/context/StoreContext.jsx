@@ -7,6 +7,9 @@ export const StoreContext = createContext();
 export const StoreProvider = ({ children }) => {
   const { user } = useContext(UserContext);
 
+  // ======================
+  // STATE
+  // ======================
   const [products, setProducts] = useState([]);
   const [bestSelling, setBestSelling] = useState([]);
   const [newItems, setNewItems] = useState([]);
@@ -27,8 +30,10 @@ export const StoreProvider = ({ children }) => {
     priceMax: null,
     sort: null,
     search: "",
+    tags: [],
   });
 
+  // Axios instance
   const api = axios.create({
     baseURL: "http://localhost:3000/api/v1",
     withCredentials: true,
@@ -37,11 +42,9 @@ export const StoreProvider = ({ children }) => {
   // ======================
   // PRODUCTS
   // ======================
-  const fetchProducts = async (pageNumber = page, filterObj = filters) => {
+  const fetchProducts = async (pageNumber = 1, filterObj = filters) => {
     try {
       setLoading(true);
-      const priceMin = filterObj.priceMin != null ? Number(filterObj.priceMin) : undefined;
-      const priceMax = filterObj.priceMax != null ? Number(filterObj.priceMax) : undefined;
 
       const params = {
         page: pageNumber,
@@ -49,19 +52,20 @@ export const StoreProvider = ({ children }) => {
         season: filterObj.season || undefined,
         sort: filterObj.sort || undefined,
         search: filterObj.search || undefined,
-        priceMin,
-        priceMax,
+        priceMin: filterObj.priceMin != null ? Number(filterObj.priceMin) : undefined,
+        priceMax: filterObj.priceMax != null ? Number(filterObj.priceMax) : undefined,
+        tags: filterObj.tags?.length ? filterObj.tags.join(",") : undefined,
       };
 
       const res = await api.get("/products", { params });
       const data = res.data.data || [];
 
       setProducts(data);
-      setPage(res.data.page);
-      setPages(res.data.pages);
-      setTotal(res.data.total);
+      setPage(res.data.page || 1);
+      setPages(res.data.pages || 1);
+      setTotal(res.data.total || 0);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching products:", err);
       setProducts([]);
       setPage(1);
       setPages(1);
@@ -76,7 +80,7 @@ export const StoreProvider = ({ children }) => {
       const res = await api.get("/products/filters/top-sellers");
       setBestSelling(res.data.data || []);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching best sellers:", err);
       setBestSelling([]);
     }
   };
@@ -86,7 +90,7 @@ export const StoreProvider = ({ children }) => {
       const res = await api.get("/products/filters/new-items");
       setNewItems(res.data.data || []);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching new items:", err);
       setNewItems([]);
     }
   };
@@ -94,19 +98,19 @@ export const StoreProvider = ({ children }) => {
   const fetchProductById = async (id) => {
     try {
       const res = await api.get(`/products/${id}`);
-      return res.data.data;
+      return res.data.data || null;
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching product by id:", err);
       return null;
     }
   };
 
-  // Fetch products when filters change
+  // Fetch products whenever filters change
   useEffect(() => {
     fetchProducts(1, filters);
   }, [filters]);
 
-  // Fetch top sellers and new items on mount
+  // Fetch best-selling and new items once
   useEffect(() => {
     fetchBestSelling();
     fetchNewItems();
@@ -123,7 +127,7 @@ export const StoreProvider = ({ children }) => {
         const res = await api.get("/wishlist");
         setWishlist(res.data.data || []);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching wishlist:", err);
       }
     };
     fetchWishlist();
@@ -135,7 +139,7 @@ export const StoreProvider = ({ children }) => {
       const res = await api.post("/wishlist", { productId });
       setWishlist((prev) => [...prev, res.data.data]);
     } catch (err) {
-      console.error(err);
+      console.error("Error adding to wishlist:", err);
     }
   };
 
@@ -145,7 +149,7 @@ export const StoreProvider = ({ children }) => {
       await api.delete(`/wishlist/${productId}`);
       setWishlist((prev) => prev.filter((p) => p.id !== productId));
     } catch (err) {
-      console.error(err);
+      console.error("Error removing from wishlist:", err);
     }
   };
 
@@ -153,7 +157,8 @@ export const StoreProvider = ({ children }) => {
   // CART
   // ======================
   const addToCart = ({ product, variant, quantity = 1 }) => {
-    if (!variant) variant = product.variants[0];
+    if (!variant && product.variants?.length) variant = product.variants[0];
+    if (!variant) return; // no variant to add
 
     setCart((prev) => {
       const index = prev.findIndex(
@@ -222,11 +227,14 @@ export const StoreProvider = ({ children }) => {
       setCart([]);
       return { success: true, order: res.data };
     } catch (err) {
-      console.error(err);
+      console.error("Error placing order:", err);
       return { success: false, message: err.response?.data?.message || err.message };
     }
   };
 
+  // ======================
+  // CONTEXT VALUE
+  // ======================
   return (
     <StoreContext.Provider
       value={{
