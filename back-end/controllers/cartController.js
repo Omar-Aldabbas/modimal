@@ -1,9 +1,7 @@
-// controllers/cartController.js
 import prisma from "../src/db.js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/AppError.js";
 
-// Helper: include product info in cart
 const includeCartItems = {
   include: {
     items: {
@@ -14,11 +12,8 @@ const includeCartItems = {
   },
 };
 
-// ======================
-// GET CART (for logged in user)
-// ======================
 export const getCart = catchAsync(async (req, res, next) => {
-  const userId = req.user.id; // comes from auth middleware
+  const userId = req.user.id; 
 
   let cart = await prisma.cart.findUnique({
     where: { userId },
@@ -38,9 +33,7 @@ export const getCart = catchAsync(async (req, res, next) => {
   });
 });
 
-// ======================
-// ADD ITEM TO CART
-// ======================
+
 export const addToCart = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const { productId, quantity } = req.body;
@@ -57,7 +50,6 @@ export const addToCart = catchAsync(async (req, res, next) => {
     });
   }
 
-  // Check if product already exists in cart
   const existingItem = await prisma.cartItem.findUnique({
     where: {
       cartId_productId: {
@@ -94,9 +86,6 @@ export const addToCart = catchAsync(async (req, res, next) => {
   });
 });
 
-// ======================
-// UPDATE ITEM QUANTITY
-// ======================
 export const updateCartItem = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const { productId, quantity } = req.body;
@@ -141,9 +130,7 @@ export const updateCartItem = catchAsync(async (req, res, next) => {
   });
 });
 
-// ======================
-// REMOVE ITEM FROM CART
-// ======================
+
 export const removeFromCart = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const { productId } = req.body;
@@ -170,9 +157,7 @@ export const removeFromCart = catchAsync(async (req, res, next) => {
   });
 });
 
-// ======================
-// CLEAR CART
-// ======================
+
 export const clearCart = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
 

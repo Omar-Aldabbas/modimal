@@ -66,7 +66,6 @@ export const TopSellersSection = () => {
                 key={product.id}
                 className="overflow-hidden flex flex-col relative"
               >
-                {/* Product Image */}
                 <div className="relative">
                   <Link to={`/products/${product.id}`}>
                     <img
@@ -76,7 +75,6 @@ export const TopSellersSection = () => {
                     />
                   </Link>
 
-                  {/* Wishlist Button */}
                   <button
                     onClick={() =>
                       isInWishlist
@@ -96,7 +94,6 @@ export const TopSellersSection = () => {
                   </button>
                 </div>
 
-                {/* Product Info */}
                 <div className="p-4 flex flex-1 justify-between">
                   <div className="flex flex-col">
                     <h3 className="text-xl font-semibold mb-3 flex items-center">

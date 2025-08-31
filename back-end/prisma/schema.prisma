@@ -7,9 +7,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// ======================
 // USERS
-// ======================
 model User {
   id        Int       @id @default(autoincrement())
   username  String
@@ -25,9 +23,7 @@ model User {
   likes     Like[]
 }
 
-// ======================
 // PRODUCTS
-// ======================
 model Product {
   id          Int       @id @default(autoincrement())
   name        String
@@ -47,9 +43,7 @@ model Product {
   likedBy     Like[]
 }
 
-// ======================
 // ORDERS
-// ======================
 model Order {
   id        Int         @id @default(autoincrement())
   user      User        @relation(fields: [userId], references: [id])
@@ -59,9 +53,7 @@ model Order {
   items     OrderItem[]
 }
 
-// ======================
 // ORDER ITEMS
-// ======================
 model OrderItem {
   id        Int             @id @default(autoincrement())
   order     Order           @relation(fields: [orderId], references: [id])
@@ -72,9 +64,7 @@ model OrderItem {
   price     Float
 }
 
-// ======================
 // CART
-// ======================
 model Cart {
   id        Int        @id @default(autoincrement())
   userId    Int        @unique
@@ -90,12 +80,10 @@ model CartItem {
   product   Product   @relation(fields: [productId], references: [id])
   quantity  Int       @default(1)
 
-  @@unique([cartId, productId]) // ensures one product per cart
+  @@unique([cartId, productId]) 
 }
 
-// ======================
 // LIKES (Wishlist)
-// ======================
 model Like {
   id        Int      @id @default(autoincrement())
   userId    Int

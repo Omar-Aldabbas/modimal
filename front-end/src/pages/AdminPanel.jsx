@@ -16,7 +16,6 @@ export const AdminPanel = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6 flex flex-col">
-      {/* Breadcrumb */}
       <div className="text-sm  mb-4 text-foreground text-md tracking-widest">
         <button onClick={() => navigate("/")} className="hover:underline hover:text-primary">
           Home

@@ -1,4 +1,3 @@
-// src/FakeProducts1-20.js
 export const FakeProducts = [
   {
     name: "A.S.I Suit",

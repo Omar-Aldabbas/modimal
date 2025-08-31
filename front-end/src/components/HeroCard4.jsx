@@ -7,7 +7,6 @@ export const HeroCard4 = () => {
       className="w-full min-h-[90vh] bg-cover bg-center lg:bg-top relative flex items-center px-4"
       style={{ backgroundImage: `url(${PunkCollection})` }}
     >
-      {/* Bloody overlay for contrast */}
       <div className="absolute inset-0 bg-black/50 mix-blend-multiply"></div>
 
       <div className="relative z-10 max-w-lg md:absolute md:top-1/2 md:left-8 transform md:-translate-y-1/2 text-left space-y-6">
@@ -23,7 +22,6 @@ export const HeroCard4 = () => {
           }}
           className="relative inline-block px-6 py-3 font-bold text-lg text-white border-2 border-red-800 overflow-hidden group hover:text-black"
         >
-          {/* Bloody jagged hover background */}
           <span className="absolute -top-1 -left-1 w-full h-full bg-red-800 rotate-[-6deg] scale-125 origin-top-left transition-transform duration-300 group-hover:translate-x-1 group-hover:translate-y-1"></span>
           <span className="relative z-10">Explore Punk</span>
         </Link>

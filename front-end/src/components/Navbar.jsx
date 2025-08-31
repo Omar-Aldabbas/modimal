@@ -26,25 +26,21 @@ export const Navbar = () => {
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
 
-  // Scroll detection
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Dynamic cart/wishlist counts
   useEffect(() => {
     setCartCount(cart.reduce((sum, item) => sum + item.quantity, 0));
     setWishlistCount(wishlist.length);
   }, [cart, wishlist]);
 
-  // Toggle dropdown tag
   const toggleTag = (tag) => {
     setActiveTag(activeTag?.title === tag.title ? null : tag);
   };
 
-  // Logo click scrolls home
   const handleLogoClick = () => {
     navigate("/");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -61,7 +57,6 @@ export const Navbar = () => {
 
   return (
     <>
-      {/* Desktop Navbar */}
       <nav
         className={cn(
           "hidden md:flex sticky top-0 z-50 py-3 flex-col w-full transition-all duration-500",
@@ -69,7 +64,6 @@ export const Navbar = () => {
         )}
       >
         <ul className="flex justify-around items-center px-4">
-          {/* Logo */}
           <li>
             <Logo
               onClick={handleLogoClick}
@@ -77,7 +71,6 @@ export const Navbar = () => {
             />
           </li>
 
-          {/* Nav Tags */}
           <li>
             <ul className="font-thin text-md text-body/90 flex gap-5">
               {NavTags.map((tag, i) => (
@@ -93,17 +86,14 @@ export const Navbar = () => {
             </ul>
           </li>
 
-          {/* Action Icons */}
           <li>
             <ul className="hidden md:flex gap-3 items-center relative">
-              {/* Search */}
               <li>
                 <button onClick={() => navigate("/products")}>
                   <Search size={20} className="hover:text-header" />
                 </button>
               </li>
 
-              {/* Wishlist */}
               <li className="relative">
                 <button onClick={() => navigateAuth("/login", "/wishlist")}>
                   <Heart size={20} className="hover:text-header" />
@@ -115,14 +105,12 @@ export const Navbar = () => {
                 </button>
               </li>
 
-              {/* User Account */}
               <li>
                 <button onClick={() => navigateAuth("/login", "/account")}>
                   <User2 size={20} className="hover:text-header" />
                 </button>
               </li>
 
-              {/* Cart */}
               <li className="relative">
                 <button onClick={() => navigate("/cart")}>
                   <LucideShoppingBag size={20} className="hover:text-header" />
@@ -134,7 +122,6 @@ export const Navbar = () => {
                 </button>
               </li>
 
-              {/* Theme Toggle */}
               <li>
                 <ThemeToggle />
               </li>
@@ -142,7 +129,6 @@ export const Navbar = () => {
           </li>
         </ul>
 
-        {/* Dropdown for active tag */}
         {activeTag && (
           <div className="sticky top-0 min-h-[60vh] py-4 flex justify-around items-center w-full">
             <div className="grid grid-cols-3 gap-6 px-6">

@@ -5,9 +5,7 @@ export const Logo = ({ className = '', onClick }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    // First, trigger any custom onClick passed as a prop
     if (onClick) onClick();
-    // Then navigate to home
     navigate("/");
   };
 

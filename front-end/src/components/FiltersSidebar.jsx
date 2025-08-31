@@ -43,7 +43,6 @@ export const FiltersSidebar = ({ filters, onApply, onClear }) => {
 
   return (
     <div className="w-full lg:max-w-xs border border-gray-200 p-4 space-y-4">
-      {/* Mobile / iPad toggle */}
       <div
         className="lg:hidden flex justify-between items-center cursor-pointer"
         onClick={() => setMobileOpen(!mobileOpen)}
@@ -52,13 +51,11 @@ export const FiltersSidebar = ({ filters, onApply, onClear }) => {
         {mobileOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </div>
 
-      {/* Filters Content */}
       <div
         className={`${
           mobileOpen ? "block" : "hidden"
         } lg:block space-y-6 transition-all duration-300`}
       >
-        {/* Season Tags */}
         <div>
           <p className="text-sm text-foreground mb-2 font-semibold">Season</p>
           <div className="flex flex-wrap gap-2">
@@ -78,7 +75,6 @@ export const FiltersSidebar = ({ filters, onApply, onClear }) => {
           </div>
         </div>
 
-        {/* Price Inputs */}
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-foreground">Price Min</label>
           <input
@@ -100,7 +96,6 @@ export const FiltersSidebar = ({ filters, onApply, onClear }) => {
           />
         </div>
 
-        {/* Sort Buttons */}
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-sm font-semibold text-foreground">Sort By</p>
           <button
@@ -125,7 +120,6 @@ export const FiltersSidebar = ({ filters, onApply, onClear }) => {
           </button>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex gap-2">
           <button
             onClick={() => onApply(localFilters)}

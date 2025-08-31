@@ -5,7 +5,7 @@ export const SearchBar = ({ onSearch }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    onSearch(query); // send query back to ProductsPage
+    onSearch(query);
   };
 
   return (

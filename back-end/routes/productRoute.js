@@ -12,16 +12,13 @@ import { protect, restrictTo } from "../controllers/authController.js";
 
 const router = express.Router();
 
-// Filters shortcuts
 router.get("/filters/top-sellers", getTopSellers);
 router.get("/filters/new-items", getNewItems);
 
-// Public Routes
-router.get("/", getAllProducts); // Get products with optional filters + pagination
+router.get("/", getAllProducts); 
 router.get("/:id", getProductById);
 
 
-// Protected routes (admin only)
 router.use(protect, restrictTo("admin"));
 router.post("/", createProduct);
 router.patch("/:id", updateProduct);

@@ -21,7 +21,6 @@ export const CollectionsSection = () => {
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:gap-8 lg:gap-10 py-4">
-        {/* Left Column */}
         <div className="grid grid-rows-6 gap-3 md:gap-4">
           <div className="row-span-2">
             <Link
@@ -56,7 +55,6 @@ export const CollectionsSection = () => {
           </div>
         </div>
 
-        {/* Right Column */}
         <div className="grid grid-rows-6 gap-3 md:gap-4">
           <div className="row-span-3">
             <Link

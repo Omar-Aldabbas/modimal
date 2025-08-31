@@ -13,7 +13,6 @@ export const ProductCard = ({
 
   return (
     <div className="flex flex-col overflow-hidden gap-2 shadow-primary">
-      {/* IMAGE */}
       <Link to={`/products/${product.id}`} className="relative h-[200px] sm:h-[250px] md:h-[280px] lg:h-[300px]">
         <img
           src={product.mainPic}
@@ -38,9 +37,7 @@ export const ProductCard = ({
         </button>
       </Link>
 
-      {/* INFO */}
       <div className="flex flex-col sm:flex-row p-2 gap-2">
-        {/* Left - Title & Description */}
         <div className="flex-1 flex flex-col justify-center">
           <Link to={`/products/${product.id}`}>
             <h3 className="text-sm font-semibold mb-1">
@@ -56,7 +53,6 @@ export const ProductCard = ({
           </p>
         </div>
 
-        {/* Right - Price & Button */}
         <div className="flex flex-row sm:flex-col justify-between sm:justify-center items-center gap-2 w-full sm:w-auto">
           <span className="font-bold text-sm">{`$${product.price}`}</span>
           <button

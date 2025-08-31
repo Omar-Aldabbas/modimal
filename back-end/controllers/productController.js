@@ -2,22 +2,17 @@ import prisma from "../src/db.js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/AppError.js";
 
-// ======================
-// CONFIG
-// ======================
+
 const GITHUB_BASE_URL =
   "https://raw.githubusercontent.com/Omar-Aldabbas/modimal/main/back-end/public/images";
 
-// Helper: prepend full URL to images
 const mapImagesToURL = (product) => ({
   ...product,
   mainPic: product.mainPic ? `${GITHUB_BASE_URL}/${product.mainPic}` : "",
   pics: product.pics?.map((pic) => `${GITHUB_BASE_URL}/${pic}`) || [],
 });
 
-// ======================
-// GET ALL PRODUCTS
-// ======================
+
 export const getAllProducts = catchAsync(async (req, res, next) => {
   const { season, tag, sort, limit, page, search, priceMin, priceMax } = req.query;
 
@@ -81,9 +76,7 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
 
 
 
-// ======================
-// GET TOP SELLERS
-// ======================
+
 export const getTopSellers = catchAsync(async (req, res, next) => {
   const products = await prisma.product.findMany({
     orderBy: { sales: "desc" },
@@ -99,9 +92,7 @@ export const getTopSellers = catchAsync(async (req, res, next) => {
   });
 });
 
-// ======================
-// GET NEW ITEMS
-// ======================
+
 export const getNewItems = catchAsync(async (req, res, next) => {
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
@@ -117,9 +108,6 @@ export const getNewItems = catchAsync(async (req, res, next) => {
   });
 });
 
-// ======================
-// GET PRODUCT BY ID
-// ======================
 export const getProductById = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 
@@ -148,9 +136,7 @@ export const getProductById = catchAsync(async (req, res, next) => {
   });
 });
 
-// ======================
-// CREATE PRODUCT
-// ======================
+
 export const createProduct = catchAsync(async (req, res, next) => {
   const { name, description, price, season, mainPic, variants, tags, pics } =
     req.body;
@@ -175,9 +161,7 @@ export const createProduct = catchAsync(async (req, res, next) => {
   });
 });
 
-// ======================
-// UPDATE PRODUCT
-// ======================
+
 export const updateProduct = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const { name, description, price, season, mainPic, variants, tags, pics } =
@@ -195,9 +179,7 @@ export const updateProduct = catchAsync(async (req, res, next) => {
   });
 });
 
-// ======================
-// DELETE PRODUCT
-// ======================
+
 export const deleteProduct = catchAsync(async (req, res, next) => {
   const { id } = req.params;
 

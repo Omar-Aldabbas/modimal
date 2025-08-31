@@ -106,9 +106,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
     .json({ status: "success", message: "Password updated successfully" });
 });
 
-// ----------------------
-// Forgot Password
-// ----------------------
+
 export const forgotPassword = catchAsync(async (req, res, next) => {
   const { email } = req.body;
   const user = await prisma.user.findUnique({ where: { email } });
@@ -138,9 +136,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: "success", message: "Token sent to email!" });
 });
 
-// ----------------------
-// Reset Password
-// ----------------------
+
 export const resetPassword = catchAsync(async (req, res, next) => {
   const { token } = req.params;
   const { newPassword, passwordConfirm } = req.body;

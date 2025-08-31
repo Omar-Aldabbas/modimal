@@ -28,7 +28,6 @@ export const MobileNavbar = () => {
 
   return (
     <nav className="md:hidden sticky top-0 z-50">
-      {/* Top bar */}
       <div className="flex justify-between items-center px-4 py-3 bg-background shadow-sm">
         <Logo className="cursor-pointer" onClick={() => handleNavigate("/")} />
         <div className="flex items-center gap-3">
@@ -44,10 +43,8 @@ export const MobileNavbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col">
-          {/* Close button */}
           <button
             onClick={() => setMobileOpen(false)}
             className="absolute top-4 right-4 p-2 rounded hover:bg-primary/10 transition"
@@ -55,7 +52,6 @@ export const MobileNavbar = () => {
             <X size={28} />
           </button>
 
-          {/* Top actions */}
           <div className="flex justify-center items-center mt-20 gap-6 px-4">
             <ThemeToggle />
             <button onClick={() => handleNavigate(user ? "/account" : "/login")} className="p-2 rounded hover:bg-primary/10 transition">
@@ -69,7 +65,6 @@ export const MobileNavbar = () => {
             </button>
           </div>
 
-          {/* NavTags Accordion */}
           <div className="flex-1 overflow-y-auto mt-6 px-4 pb-8">
             {NavTags.map((tag, i) => (
               <div key={i} className="w-full mb-2">

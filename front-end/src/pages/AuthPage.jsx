@@ -11,7 +11,6 @@ export const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Redirect if already logged in
   useEffect(() => {
     if (user) navigate("/account", { replace: true });
   }, [user, navigate]);
@@ -32,7 +31,6 @@ export const AuthPage = () => {
     setError("");
 
     try {
-      // Signup validation
       if (!isLogin && formData.password !== formData.passwordConfirm) {
         setError("Passwords do not match");
         setLoading(false);
@@ -48,7 +46,7 @@ export const AuthPage = () => {
       if (!result.success) {
         setError(result.message);
       } else {
-        navigate("/account", { replace: true }); // navigate immediately after success
+        navigate("/account", { replace: true }); 
       }
     } catch (err) {
       setError(err.message || "Something went wrong");

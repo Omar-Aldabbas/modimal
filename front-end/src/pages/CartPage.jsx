@@ -39,7 +39,6 @@ export const CartPage = () => {
             key={`${item.id}-${item.size}-${item.color}`}
             className="grid grid-cols-12 items-center gap-2 sm:gap-4 border-b border-gray-300 py-3"
           >
-            {/* Image */}
             <Link to={`/products/${item.id}`} className="col-span-4 sm:col-span-3">
               <img
                 src={item.mainPic}
@@ -48,7 +47,6 @@ export const CartPage = () => {
               />
             </Link>
 
-            {/* Info */}
             <div className="col-span-8 sm:col-span-5 flex flex-col gap-1">
               <Link to={`/products/${item.id}`} className="hover:underline">
                 <h3 className="font-bold text-base sm:text-lg">{item.title}</h3>
@@ -58,7 +56,6 @@ export const CartPage = () => {
               <span className="font-bold text-primary text-sm sm:text-base">${item.price}</span>
             </div>
 
-            {/* Quantity */}
             <div className="col-span-6 sm:col-span-2 flex items-center justify-start gap-1">
               <button
                 onClick={() =>
@@ -83,7 +80,6 @@ export const CartPage = () => {
               </button>
             </div>
 
-            {/* Remove */}
             <div className="col-span-6 sm:col-span-2 flex justify-start sm:justify-center mt-2 sm:mt-0">
               <button
                 onClick={() => removeFromCart(item, { size: item.size, color: item.color })}
@@ -96,7 +92,6 @@ export const CartPage = () => {
         ))}
       </div>
 
-      {/* Total & Checkout */}
       <div className="flex flex-col sm:flex-row justify-between items-center mt-6 border-t border-gray-300 pt-4">
         <span className="text-lg sm:text-xl font-bold">Total: ${totalPrice.toFixed(2)}</span>
         <button

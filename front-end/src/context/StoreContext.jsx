@@ -153,12 +153,9 @@ export const StoreProvider = ({ children }) => {
     }
   };
 
-  // ======================
-  // CART
-  // ======================
   const addToCart = ({ product, variant, quantity = 1 }) => {
     if (!variant && product.variants?.length) variant = product.variants[0];
-    if (!variant) return; // no variant to add
+    if (!variant) return; 
 
     setCart((prev) => {
       const index = prev.findIndex(
@@ -217,9 +214,7 @@ export const StoreProvider = ({ children }) => {
     );
   };
 
-  // ======================
-  // ORDERS
-  // ======================
+
   const placeOrder = async () => {
     if (!user) return alert("Login required to place an order");
     try {
@@ -232,9 +227,7 @@ export const StoreProvider = ({ children }) => {
     }
   };
 
-  // ======================
-  // CONTEXT VALUE
-  // ======================
+
   return (
     <StoreContext.Provider
       value={{

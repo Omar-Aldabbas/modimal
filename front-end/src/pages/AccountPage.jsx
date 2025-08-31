@@ -10,7 +10,6 @@ export const AccountPage = () => {
   const [formData, setFormData] = useState({ username: "", email: "" });
   const [loading, setLoading] = useState(true);
 
-  // Fetch user on mount
   useEffect(() => {
     const loadUser = async () => {
       const token = localStorage.getItem("token");
@@ -19,13 +18,13 @@ export const AccountPage = () => {
         return;
       }
       setLoading(true);
-      await fetchMe(); // fetchMe updates context.user with res.data.user
+      await fetchMe();
       setLoading(false);
     };
     loadUser();
   }, [fetchMe, navigate]);
 
-  // Sync form data with context user
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -54,7 +53,7 @@ export const AccountPage = () => {
 
       alert("Profile updated successfully!");
       setEditMode(false);
-      await fetchMe(); // refresh context
+      await fetchMe(); 
     } catch (err) {
       alert(err.message);
     }
@@ -96,7 +95,6 @@ export const AccountPage = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground px-8 py-6">
-      {/* Breadcrumb */}
       <div className="mb-6 text-sm text-gray-500 flex gap-2">
         <Link to="/" className="hover:text-primary transition-colors">Home</Link>
         <span>/</span>
@@ -104,7 +102,6 @@ export const AccountPage = () => {
       </div>
 
       <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10">
-        {/* Left Panel */}
         <div className="flex flex-col border-london-blue border-2 p-6 gap-6">
           <div>
             <span className="text-xs text-gray-400 uppercase">Username</span>
@@ -152,7 +149,6 @@ export const AccountPage = () => {
           </div>
         </div>
 
-        {/* Right Panel - Edit Form */}
         {editMode && (
           <div className="flex flex-col border-london-blue border-2 p-6 gap-6">
             <h2 className="text-lg font-bold mb-4">Edit Account</h2>

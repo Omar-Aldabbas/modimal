@@ -128,7 +128,6 @@ export const updateOrder = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const { status, items } = req.body; 
   // status: "pending", "shipped", "delivered", etc.
-  // items: optional array to update items, e.g., quantity changes
 
   const order = await prisma.order.findUnique({
     where: { id: parseInt(id) },
@@ -143,8 +142,7 @@ export const updateOrder = catchAsync(async (req, res, next) => {
       status: status || order.status,
       items: items
         ? {
-            // Replace items with new ones (optional)
-            deleteMany: {}, // remove old items
+            deleteMany: {}, 
             create: items.map((item) => ({
               productId: item.productId,
               variantId: item.variantId || null,

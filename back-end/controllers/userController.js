@@ -3,7 +3,6 @@ import prisma from "../src/db.js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/AppError.js";
 
-// Utility to safely select user fields
 const userSelect = {
   id: true,
   username: true,
@@ -12,9 +11,7 @@ const userSelect = {
   createdAt: true,
 };
 
-// ----------------------
-// Get all users (admin only)
-// ----------------------
+
 export const getAllUsers = catchAsync(async (req, res, next) => {
   const users = await prisma.user.findMany({ select: userSelect });
 
@@ -25,9 +22,6 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-// ----------------------
-// Get user by ID
-// ----------------------
 export const getUserById = catchAsync(async (req, res, next) => {
   const userId = parseInt(req.params.id);
 
@@ -44,9 +38,7 @@ export const getUserById = catchAsync(async (req, res, next) => {
   });
 });
 
-// ----------------------
-// Update user (self or admin)
-// ----------------------
+
 export const updateUser = catchAsync(async (req, res, next) => {
   const userId = parseInt(req.params.id);
 
@@ -59,7 +51,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
   const data = {};
   if (username) data.username = username;
   if (email) data.email = email;
-  if (role && req.user.role === "admin") data.role = role; // only admin can change role
+  if (role && req.user.role === "admin") data.role = role; 
   if (password) data.password = await bcrypt.hash(password, 10);
 
   const updatedUser = await prisma.user.update({
@@ -75,9 +67,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
   });
 });
 
-// ----------------------
-// Delete user (admin)
-// ----------------------
+
 export const deleteUser = catchAsync(async (req, res, next) => {
   const userId = parseInt(req.params.id);
 
@@ -89,9 +79,6 @@ export const deleteUser = catchAsync(async (req, res, next) => {
   });
 });
 
-// ----------------------
-// Get logged-in user profile
-// ----------------------
 export const getMe = catchAsync(async (req, res, next) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user.id },
@@ -106,9 +93,6 @@ export const getMe = catchAsync(async (req, res, next) => {
   });
 });
 
-// ----------------------
-// Delete logged-in user account
-// ----------------------
 export const deleteMe = catchAsync(async (req, res, next) => {
   await prisma.user.delete({ where: { id: req.user.id } });
 

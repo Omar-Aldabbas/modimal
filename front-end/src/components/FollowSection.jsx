@@ -12,7 +12,6 @@ export const FollowSection = () => {
 
   const randomProducts = getRandomProducts(products, 5);
 
-  // If there are no products, just render nothing
   if (randomProducts.length === 0) return null;
 
   return (
@@ -31,7 +30,6 @@ export const FollowSection = () => {
             />
           </div>
 
-          {/* Right 2x2 grid */}
           <div className="flex-1 grid grid-cols-2">
             {randomProducts.slice(1).map((prod) => (
               <img

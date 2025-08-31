@@ -13,7 +13,6 @@ export const HeroCard1 = () => {
           harmony
         </h2>
 
-        {/* Button to products page with tag=formal */}
         <Link
           to={{
             pathname: "/products",

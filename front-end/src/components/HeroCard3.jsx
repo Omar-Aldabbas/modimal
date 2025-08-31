@@ -7,7 +7,6 @@ export const HeroCard3 = () => {
       className="w-full min-h-[90vh] bg-cover bg-center lg:bg-top relative flex flex-col items-center justify-center px-4"
       style={{ backgroundImage: `url(${NewWinterCollection})` }}
     >
-      {/* Overlay to improve readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-black/40"></div>
 
       <div
@@ -25,7 +24,6 @@ export const HeroCard3 = () => {
           <span className="text-sky-300">icy elegance</span>.
         </h2>
 
-        {/* Unique button */}
         <Link
           to={{
             pathname: "/products",

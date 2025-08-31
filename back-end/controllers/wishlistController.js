@@ -2,14 +2,12 @@ import prisma from "../src/db.js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/AppError.js";
 
-// ======================
-// GET USER WISHLIST
-// ======================
+
 export const getWishlist = catchAsync(async (req, res, next) => {
   const wishlist = await prisma.wishlist.findMany({
     where: { userId: req.user.id },
     include: {
-      product: true, // fetch product details
+      product: true,
     },
   });
 
@@ -20,19 +18,15 @@ export const getWishlist = catchAsync(async (req, res, next) => {
   });
 });
 
-// ======================
-// ADD TO WISHLIST
-// ======================
+
 export const addToWishlist = catchAsync(async (req, res, next) => {
   const { productId } = req.body;
 
-  // Check if product exists
   const product = await prisma.product.findUnique({
     where: { id: parseInt(productId) },
   });
   if (!product) return next(new AppError("Product not found", 404));
 
-  // Check if already exists in wishlist
   const existing = await prisma.wishlist.findUnique({
     where: {
       userId_productId: { userId: req.user.id, productId: parseInt(productId) },
@@ -52,9 +46,7 @@ export const addToWishlist = catchAsync(async (req, res, next) => {
   });
 });
 
-// ======================
-// REMOVE FROM WISHLIST
-// ======================
+
 export const removeFromWishlist = catchAsync(async (req, res, next) => {
   const { productId } = req.params;
 
