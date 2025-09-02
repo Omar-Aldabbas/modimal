@@ -26,9 +26,9 @@ export const Footer = () => {
 
         <div className="flex flex-col space-y-2">
           <h4 className="font-semibold text-lg mb-2 text-foreground">Quick Links</h4>
-          <a href="#" className="hover:text-primary transition text-gray-600">
+          <Link to="/" className="hover:text-primary transition text-gray-600">
             Home
-          </a>
+          </Link>
           <Link to="/products" className="hover:text-primary transition text-gray-600">
             Shop
           </Link>

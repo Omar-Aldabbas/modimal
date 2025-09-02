@@ -100,7 +100,7 @@ export const TopSellersSection = () => {
                       {product.name}
                       <span
                         className="inline-block rounded-full w-4 h-4 ml-3"
-                        style={{ backgroundColor: product.variants[0].color }}
+                        // style={{ backgroundColor: product.variants[0].color }}
                       ></span>
                     </h3>
                     <p className="text-gray-500 text-sm mb-4">

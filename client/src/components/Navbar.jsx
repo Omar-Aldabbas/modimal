@@ -1,15 +1,10 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "./Logo";
 import { NavTags } from "../data/NavTags";
 import { UserContext } from "../context/UserContext";
 import { StoreContext } from "../context/StoreContext";
-import {
-  Heart,
-  LucideShoppingBag,
-  Search,
-  User2,
-} from "lucide-react";
+import { Heart, LucideShoppingBag, Search, User2 } from "lucide-react";
 import { MobileNavbar } from "./MobileNavbar";
 import { ThemeToggle } from "./ThemeToggle";
 import formality from "../assets/images/formality.png";
@@ -26,6 +21,11 @@ export const Navbar = () => {
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
 
+  const dropdownRef = useRef(null);
+
+  const formatTag = (label) =>
+    label.toLowerCase().replace(/\s*&\s*/g, ",").replace(/\s+/g, "-");
+
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
     window.addEventListener("scroll", handleScroll);
@@ -37,6 +37,16 @@ export const Navbar = () => {
     setWishlistCount(wishlist.length);
   }, [cart, wishlist]);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setActiveTag(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const toggleTag = (tag) => {
     setActiveTag(activeTag?.title === tag.title ? null : tag);
   };
@@ -46,7 +56,6 @@ export const Navbar = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Auth-aware navigation
   const navigateAuth = (pathIfLoggedOut, pathIfLoggedIn) => {
     if (user) {
       navigate(pathIfLoggedIn);
@@ -130,7 +139,10 @@ export const Navbar = () => {
         </ul>
 
         {activeTag && (
-          <div className="sticky top-0 min-h-[60vh] py-4 flex justify-around items-center w-full">
+          <div
+            ref={dropdownRef}
+            className="sticky top-0 min-h-[60vh] py-4 flex justify-around items-center w-full"
+          >
             <div className="grid grid-cols-3 gap-6 px-6">
               {Object.entries(activeTag.sections).map(([title, values]) => (
                 <div key={title}>
@@ -141,7 +153,12 @@ export const Navbar = () => {
                         key={i}
                         className="hover:text-primary/90 hover:underline text-sm transition-all duration-500"
                       >
-                        <Link>{value}</Link>
+                        <Link
+                          to={`/products?tags=${formatTag(value)}`}
+                          onClick={() => setActiveTag(null)}
+                        >
+                          {value}
+                        </Link>
                       </li>
                     ))}
                   </ul>
@@ -150,7 +167,10 @@ export const Navbar = () => {
             </div>
 
             <div className="flex justify-center items-center gap-8 p-3">
-              <Link>
+              <Link
+                to="/products?tags=formal"
+                onClick={() => setActiveTag(null)}
+              >
                 <div className="flex flex-col gap-2 p-1 hover:text-primary/90 hover:underline text-md transition-all duration-500">
                   <img
                     src={formality}
@@ -160,7 +180,11 @@ export const Navbar = () => {
                   <h4>Formality Collection</h4>
                 </div>
               </Link>
-              <Link>
+
+              <Link
+                to="/products?tags=winter"
+                onClick={() => setActiveTag(null)}
+              >
                 <div className="flex flex-col gap-2 p-1 hover:text-primary/90 hover:underline text-md transition-all duration-500">
                   <img
                     src={newWinter}
@@ -175,7 +199,6 @@ export const Navbar = () => {
         )}
       </nav>
 
-      {/* Mobile Navbar */}
       <MobileNavbar />
     </>
   );

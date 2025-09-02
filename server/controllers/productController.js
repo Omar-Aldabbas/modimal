@@ -2,41 +2,26 @@ import prisma from "../src/db.js";
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/AppError.js";
 
-
-const GITHUB_BASE_URL =
-  "https://raw.githubusercontent.com/Omar-Aldabbas/modimal/main/back-end/public/images";
-
 const mapImagesToURL = (product) => ({
   ...product,
-  mainPic: product.mainPic ? `${GITHUB_BASE_URL}/${product.mainPic}` : "",
-  pics: product.pics?.map((pic) => `${GITHUB_BASE_URL}/${pic}`) || [],
+  mainPic: product.mainPic || "",
+  pics: product.pics || [],
 });
-
 
 export const getAllProducts = catchAsync(async (req, res, next) => {
   const { season, tag, sort, limit, page, search, priceMin, priceMax } = req.query;
-
   const take = limit ? parseInt(limit) : 6;
   const currentPage = page ? parseInt(page) : 1;
   const skip = (currentPage - 1) * take;
 
-  // Build filters
   const where = {
-    ...(season && {
-      season: season.charAt(0).toUpperCase() + season.slice(1).toLowerCase(),
-    }),
+    ...(season && { season: season.charAt(0).toUpperCase() + season.slice(1).toLowerCase() }),
     ...(tag && { tags: { has: tag } }),
     ...(search && { name: { contains: search, mode: "insensitive" } }),
     ...(priceMin && { price: { gte: Number(priceMin) } }),
-    ...(priceMax && {
-      price: {
-        ...(priceMin ? { gte: Number(priceMin) } : {}),
-        lte: Number(priceMax),
-      },
-    }),
+    ...(priceMax && { price: { ...(priceMin ? { gte: Number(priceMin) } : {}), lte: Number(priceMax) } }),
   };
 
-  // Sorting
   let orderBy = { createdAt: "desc" };
   if (sort === "price-asc") orderBy = { price: "asc" };
   if (sort === "price-desc") orderBy = { price: "desc" };
@@ -74,9 +59,6 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
   });
 });
 
-
-
-
 export const getTopSellers = catchAsync(async (req, res, next) => {
   const products = await prisma.product.findMany({
     orderBy: { sales: "desc" },
@@ -91,7 +73,6 @@ export const getTopSellers = catchAsync(async (req, res, next) => {
     data: products.map(mapImagesToURL),
   });
 });
-
 
 export const getNewItems = catchAsync(async (req, res, next) => {
   const products = await prisma.product.findMany({
@@ -136,10 +117,8 @@ export const getProductById = catchAsync(async (req, res, next) => {
   });
 });
 
-
 export const createProduct = catchAsync(async (req, res, next) => {
-  const { name, description, price, season, mainPic, variants, tags, pics } =
-    req.body;
+  const { name, description, price, season, mainPic, variants, tags, pics } = req.body;
 
   const newProduct = await prisma.product.create({
     data: {
@@ -161,11 +140,9 @@ export const createProduct = catchAsync(async (req, res, next) => {
   });
 });
 
-
 export const updateProduct = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  const { name, description, price, season, mainPic, variants, tags, pics } =
-    req.body;
+  const { name, description, price, season, mainPic, variants, tags, pics } = req.body;
 
   const updatedProduct = await prisma.product.update({
     where: { id: parseInt(id) },
@@ -178,7 +155,6 @@ export const updateProduct = catchAsync(async (req, res, next) => {
     data: mapImagesToURL(updatedProduct),
   });
 });
-
 
 export const deleteProduct = catchAsync(async (req, res, next) => {
   const { id } = req.params;

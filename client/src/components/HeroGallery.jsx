@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { HeroCard1 } from "./HeroCard1";
-import { HeroCard2 } from "./HeroCard2";
-import { HeroCard3 } from "./HeroCard3";
-import { HeroCard4 } from "./HeroCard4";
-import { HeroCard5 } from "./HeroCard5";
-import { HeroCard6 } from "./HeroCard6";
-import { HeroCard7 } from "./HeroCard7";
-import { HeroCard8 } from "./HeroCard8";
+import { HeroCard1 } from "./Herocards/HeroCard1";
+import { HeroCard2 } from "./Herocards/HeroCard2";
+import { HeroCard3 } from "./Herocards/HeroCard3";
+import { HeroCard4 } from "./Herocards/HeroCard4";
+import { HeroCard5 } from "./Herocards/HeroCard5";
+import { HeroCard6 } from "./Herocards/HeroCard6";
+import { HeroCard7 } from "./Herocards/HeroCard7";
+import { HeroCard8 } from "./Herocards/HeroCard8";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const cards = [
