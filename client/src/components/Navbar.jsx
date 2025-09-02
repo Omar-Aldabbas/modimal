@@ -182,7 +182,7 @@ export const Navbar = () => {
               </Link>
 
               <Link
-                to="/products?tags=winter"
+                to="/products?season=winter"
                 onClick={() => setActiveTag(null)}
               >
                 <div className="flex flex-col gap-2 p-1 hover:text-primary/90 hover:underline text-md transition-all duration-500">
